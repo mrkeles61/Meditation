@@ -247,7 +247,7 @@
     font-weight: var(--font-weight-semibold);
 }
 
-/* ─── 1. Scroll Wheel ─── */
+/* ─── Scroll Wheel ─── */
 .scroll-picker {
     position: relative;
     overflow: hidden;
@@ -314,7 +314,7 @@
     background: linear-gradient(to top, var(--bg-primary), transparent);
 }
 
-/* ─── 2. Radial Dial ─── */
+/* ─── Radial Dial ─── */
 .radial-dial {
     position: relative;
     cursor: pointer;
@@ -376,125 +376,7 @@
     letter-spacing: 0.1em;
 }
 
-/* ─── 3. iOS Drum Roller ─── */
-.drum-picker {
-    position: relative;
-    overflow: hidden;
-    user-select: none;
-    touch-action: none;
-    width: 200px;
-    border-radius: var(--radius-lg);
-}
-
-.drum-track {
-    display: flex;
-    flex-direction: column;
-    cursor: grab;
-}
-
-.drum-track:active {
-    cursor: grabbing;
-}
-
-.drum-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-mono);
-    font-size: var(--text-xl);
-    color: var(--text-primary);
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-}
-
-.drum-item.active {
-    color: var(--accent);
-    font-weight: var(--font-weight-bold);
-}
-
-.drum-highlight {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 56px;
-    transform: translateY(-50%);
-    background: rgba(200, 149, 108, 0.04);
-    border-top: 1px solid rgba(200, 149, 108, 0.15);
-    border-bottom: 1px solid rgba(200, 149, 108, 0.15);
-    border-radius: var(--radius-md);
-    pointer-events: none;
-    z-index: 1;
-}
-
-.drum-fade-top,
-.drum-fade-bottom {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 40%;
-    pointer-events: none;
-    z-index: 2;
-}
-
-.drum-fade-top {
-    top: 0;
-    background: linear-gradient(to bottom, var(--bg-primary), transparent);
-}
-
-.drum-fade-bottom {
-    bottom: 0;
-    background: linear-gradient(to top, var(--bg-primary), transparent);
-}
-
-/* ─── 4. Grid Tap ─── */
-.grid-picker {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-2);
-    width: 280px;
-}
-
-.grid-cell {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-3) var(--space-2);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border);
-    background: var(--bg-secondary);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.grid-cell:hover {
-    border-color: var(--text-muted);
-}
-
-.grid-cell.active {
-    border-color: var(--accent);
-    background: rgba(200, 149, 108, 0.08);
-}
-
-.grid-num {
-    font-family: var(--font-mono);
-    font-size: var(--text-lg);
-    font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
-}
-
-.grid-cell.active .grid-num {
-    color: var(--accent);
-}
-
-.grid-unit {
-    font-size: 10px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
-/* ─── 5. Stepper ─── */
+/* ─── Stepper ─── */
 .stepper-picker {
     display: flex;
     align-items: center;
@@ -565,4 +447,81 @@
     height: 100%;
     background: var(--accent);
     border-radius: 2px;
+}
+
+/* ═══════════════════════════════════════════
+   TIMER ANIMATIONS
+   ═══════════════════════════════════════════ */
+
+.timer-demo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.timer-demo-label {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-muted);
+}
+
+/* ─── Orbital Ring ─── */
+.orbital-svg {
+    display: block;
+}
+
+/* ─── Breathing Blob ─── */
+.blob-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blob-shape {
+    position: absolute;
+}
+
+.blob-glow {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200, 149, 108, 0.4) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* ─── Particle Drift ─── */
+.particle-field {
+    position: relative;
+    width: 220px;
+    height: 220px;
+}
+
+.particle-dot {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--accent);
+}
+
+.particle-center-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200, 149, 108, 0.2) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* ─── Arc Dissolve ─── */
+.arc-svg {
+    display: block;
 }
