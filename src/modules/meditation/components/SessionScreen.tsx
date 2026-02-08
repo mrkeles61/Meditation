@@ -1,81 +1,69 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { Howl } from 'howler';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useMeditationStore } from '../store';
+import { startAmbient, playChime } from '../sounds';
 import { BreathingCircle } from './BreathingCircle';
 import './SessionScreen.css';
 
-const SOUND_FILES: Record<string, string> = {
-    rain: '/audio/rain.mp3',
-    ocean: '/audio/ocean.mp3',
-    'singing-bowl': '/audio/singing-bowl.mp3',
-};
-
 export function SessionScreen() {
-    const { duration, elapsed, selectedSound, tick, endSession } = useMeditationStore();
+    const { duration, elapsed, selectedSound, showTimer, tick, endSession } = useMeditationStore();
     const intervalRef = useRef<number | null>(null);
-    const soundRef = useRef<Howl | null>(null);
-    const chimeRef = useRef<Howl | null>(null);
+    const soundRef = useRef<ReturnType<typeof startAmbient> | null>(null);
+
+    const remaining = duration - elapsed;
+    const minutes = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
 
     const handleEnd = useCallback(() => {
         if (intervalRef.current) clearInterval(intervalRef.current);
-        if (soundRef.current) {
-            soundRef.current.fade(soundRef.current.volume(), 0, 1000);
-            setTimeout(() => soundRef.current?.stop(), 1000);
-        }
-
-        chimeRef.current = new Howl({ src: ['/audio/chime.mp3'], volume: 0.5 });
-        chimeRef.current.play();
-
+        soundRef.current?.stop();
+        playChime();
         setTimeout(() => endSession(), 1500);
     }, [endSession]);
 
     useEffect(() => {
         // Start ambient audio
         if (selectedSound !== 'silence') {
-            const src = SOUND_FILES[selectedSound];
-            if (src) {
-                soundRef.current = new Howl({
-                    src: [src],
-                    loop: true,
-                    volume: 0,
-                });
-                soundRef.current.play();
-                soundRef.current.fade(0, 0.4, 2000);
-            }
+            soundRef.current = startAmbient(selectedSound as 'rain' | 'ocean' | 'singing-bowl');
         }
 
         // Start timer
-        intervalRef.current = window.setInterval(() => {
-            tick();
-        }, 1000);
+        intervalRef.current = window.setInterval(() => tick(), 1000);
 
         return () => {
             if (intervalRef.current) clearInterval(intervalRef.current);
-            soundRef.current?.unload();
-            chimeRef.current?.unload();
+            soundRef.current?.stop();
         };
     }, [selectedSound, tick]);
 
     // Check if session should end
     useEffect(() => {
-        if (elapsed >= duration) {
-            handleEnd();
-        }
+        if (elapsed >= duration) handleEnd();
     }, [elapsed, duration, handleEnd]);
 
     // Handle early exit
     function handleEarlyExit() {
         if (intervalRef.current) clearInterval(intervalRef.current);
-        soundRef.current?.fade(soundRef.current.volume(), 0, 500);
-        setTimeout(() => {
-            soundRef.current?.stop();
-            endSession();
-        }, 500);
+        soundRef.current?.stop();
+        setTimeout(() => endSession(), 300);
     }
 
     return (
         <div className="session-screen" onClick={handleEarlyExit}>
             <BreathingCircle />
+            <AnimatePresence>
+                {showTimer && (
+                    <motion.div
+                        className="session-timer"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        {minutes}:{seconds.toString().padStart(2, '0')}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            <p className="session-hint">tap anywhere to end</p>
         </div>
     );
 }
