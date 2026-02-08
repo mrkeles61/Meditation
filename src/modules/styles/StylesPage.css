@@ -222,7 +222,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   DURATION PICKERS — Shared
+   DURATION PICKERS
    ═══════════════════════════════════════════ */
 .picker-demo-wrap {
     display: flex;
@@ -313,89 +313,6 @@
     background: linear-gradient(to top, var(--bg-primary), transparent);
 }
 
-/* ─── Horizontal Carousel ─── */
-.carousel-picker {
-    position: relative;
-    overflow: hidden;
-    width: 320px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    touch-action: none;
-}
-
-.carousel-track {
-    display: flex;
-    align-items: center;
-    cursor: grab;
-    padding-left: 120px;
-}
-
-.carousel-track:active {
-    cursor: grabbing;
-}
-
-.carousel-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-}
-
-.carousel-card.active .carousel-num {
-    color: var(--accent);
-}
-
-.carousel-num {
-    font-family: var(--font-mono);
-    font-size: var(--text-2xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
-    line-height: 1;
-}
-
-.carousel-unit {
-    font-size: 10px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
-.carousel-indicator {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 70px;
-    height: 60px;
-    border: 1px solid rgba(200, 149, 108, 0.2);
-    border-radius: var(--radius-md);
-    pointer-events: none;
-    z-index: 1;
-}
-
-.carousel-fade-left,
-.carousel-fade-right {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 60px;
-    pointer-events: none;
-    z-index: 2;
-}
-
-.carousel-fade-left {
-    left: 0;
-    background: linear-gradient(to right, var(--bg-primary), transparent);
-}
-
-.carousel-fade-right {
-    right: 0;
-    background: linear-gradient(to left, var(--bg-primary), transparent);
-}
-
 /* ─── Clock Face ─── */
 .clock-face {
     position: relative;
@@ -407,8 +324,13 @@
 
 .clock-ring {
     fill: none;
-    stroke: rgba(200, 149, 108, 0.08);
-    stroke-width: 2;
+    stroke: rgba(200, 149, 108, 0.06);
+    stroke-width: 1.5;
+}
+
+.clock-tick {
+    stroke: rgba(200, 149, 108, 0.1);
+    stroke-width: 1;
 }
 
 .clock-hand {
@@ -420,8 +342,8 @@
 .clock-dot {
     position: absolute;
     transform: translate(-50%, -50%);
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -430,10 +352,10 @@
     font-size: 11px;
     font-weight: var(--font-weight-bold);
     color: var(--text-secondary);
-    background: var(--bg-tertiary);
+    background: var(--bg-secondary);
     border: 1px solid var(--border);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .clock-dot:hover {
@@ -445,356 +367,193 @@
     background: var(--accent);
     color: var(--bg-primary);
     border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(200, 149, 108, 0.25);
 }
 
-/* ─── Smooth Slider ─── */
-.slider-container {
-    width: 300px;
-    position: relative;
-}
-
-.slider-labels {
+/* ─── Suggestion Cards ─── */
+.suggestion-cards {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: var(--space-2);
-}
-
-.slider-mark {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: color var(--transition-fast);
-    min-width: 20px;
-    text-align: center;
-}
-
-.slider-mark.active {
-    color: var(--accent);
-    font-weight: var(--font-weight-bold);
-}
-
-.slider-track {
-    position: relative;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--bg-tertiary);
-}
-
-.slider-fill {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    border-radius: 2px;
-    background: var(--accent);
-}
-
-.slider-thumb {
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 10px rgba(200, 149, 108, 0.3);
-    pointer-events: none;
-}
-
-.slider-input {
-    position: absolute;
-    top: -6px;
-    left: 0;
-    width: 100%;
-    height: 16px;
-    opacity: 0;
-    cursor: pointer;
-}
-
-/* ─── Card Flip ─── */
-.flip-picker {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-3);
-}
-
-.flip-arrow {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
     justify-content: center;
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
-    cursor: pointer;
 }
 
-.flip-arrow:hover:not(:disabled) {
-    color: var(--accent);
-    border-color: var(--accent);
-}
-
-.flip-arrow:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.flip-card-container {
-    width: 120px;
-    height: 100px;
-    perspective: 600px;
-    overflow: hidden;
-}
-
-.flip-card {
-    width: 100%;
-    height: 100%;
+.suggestion-card {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
     background: var(--bg-secondary);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    min-width: 52px;
 }
 
-.flip-num {
+.suggestion-card:hover {
+    border-color: var(--text-muted);
+}
+
+.suggestion-card.active {
+    border-color: var(--accent);
+    background: rgba(200, 149, 108, 0.06);
+}
+
+.suggestion-num {
     font-family: var(--font-mono);
-    font-size: var(--text-4xl);
+    font-size: var(--text-lg);
     font-weight: var(--font-weight-bold);
     color: var(--text-primary);
     line-height: 1;
 }
 
-.flip-unit {
-    font-size: var(--text-xs);
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
-/* ─── Bubble Select ─── */
-.bubble-field {
-    position: relative;
-    width: 320px;
-    height: 260px;
-}
-
-.bubble {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-bold);
-    color: var(--text-secondary);
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
-    cursor: pointer;
-    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
-}
-
-.bubble:hover {
-    border-color: var(--accent);
-    color: var(--text-primary);
-}
-
-.bubble.active {
-    background: rgba(200, 149, 108, 0.12);
-    border-color: var(--accent);
+.suggestion-card.active .suggestion-num {
     color: var(--accent);
 }
 
-/* ═══════════════════════════════════════════
-   TIMER ANIMATIONS — Relaxing
-   ═══════════════════════════════════════════ */
-.timer-demo-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-4);
-}
-
-.timer-demo-label {
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-size: var(--text-xs);
-    font-weight: var(--font-weight-medium);
+.suggestion-unit {
+    font-size: 9px;
     color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-/* ─── Water Ripple ─── */
-.ripple-container {
+/* ═══════════════════════════════════════════
+   CANDLE MEDITATION TIMER
+   ═══════════════════════════════════════════ */
+
+.candle-timer-scene {
     position: relative;
-    width: 240px;
-    height: 240px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ripple-ring {
-    position: absolute;
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    border: 1px solid rgba(200, 149, 108, 0.15);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.ripple-center {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: rgba(200, 149, 108, 0.4);
-    position: relative;
-    z-index: 1;
-}
-
-/* ─── Zen Enso ─── */
-.enso-svg {
-    display: block;
-}
-
-/* ─── Aurora Waves ─── */
-.aurora-bg {
-    background: linear-gradient(180deg, #060612 0%, #0a0a14 100%);
-}
-
-.aurora-content {
     width: 100%;
     height: 100%;
-    position: relative;
-    justify-content: flex-end;
-    padding-bottom: var(--space-8);
-}
-
-.aurora-layers {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-}
-
-.aurora-layer {
-    position: absolute;
-    width: 160%;
-    height: 50%;
-    left: -30%;
-    filter: blur(60px);
-    border-radius: 50%;
-}
-
-.aurora-1 {
-    top: 10%;
-    background: radial-gradient(ellipse, rgba(100, 200, 180, 0.3) 0%, transparent 70%);
-}
-
-.aurora-2 {
-    top: 25%;
-    background: radial-gradient(ellipse, rgba(120, 140, 220, 0.25) 0%, transparent 70%);
-}
-
-.aurora-3 {
-    top: 15%;
-    background: radial-gradient(ellipse, rgba(200, 149, 108, 0.2) 0%, transparent 70%);
-}
-
-/* ─── Candle Flame ─── */
-.candle-scene {
-    position: relative;
-    width: 80px;
-    height: 200px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
+    padding-bottom: var(--space-8);
+    background: radial-gradient(ellipse at 50% 30%, #110e0a 0%, #0a0a0f 50%, #070710 100%);
 }
 
-.candle-glow {
+/* Ambient glow from flame */
+.candle-ambient-glow {
     position: absolute;
-    top: 20%;
-    width: 120px;
-    height: 120px;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 250px;
+    height: 250px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 180, 80, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 170, 60, 0.08) 0%, rgba(255, 140, 40, 0.02) 50%, transparent 70%);
     pointer-events: none;
 }
 
-.candle-flame {
-    position: relative;
-    width: 16px;
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    transform-origin: bottom center;
-    z-index: 2;
-}
-
-.flame-inner {
+/* Flame group — positioned at top of wax */
+.candle-flame-group {
     position: absolute;
-    inset: 20% 25%;
-    border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
-    background: rgba(255, 220, 120, 0.7);
-}
-
-.flame-outer {
-    position: absolute;
-    inset: 0;
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    background: linear-gradient(to top, rgba(255, 140, 50, 0.6), rgba(255, 200, 80, 0.3), transparent);
-}
-
-.candle-wick {
-    width: 2px;
-    height: 8px;
-    background: rgba(100, 80, 60, 0.6);
-    z-index: 1;
-}
-
-.candle-body {
-    width: 32px;
-    height: 80px;
-    background: linear-gradient(to bottom, rgba(230, 210, 180, 0.12), rgba(200, 180, 150, 0.06));
-    border-radius: 3px 3px 4px 4px;
-    border: 1px solid rgba(200, 180, 150, 0.08);
-}
-
-/* ─── Moon Phase ─── */
-.moon-scene {
-    position: relative;
-    width: 240px;
-    height: 240px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 60px;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
 }
 
-.moon-glow {
+/* Outer flame — warm orange, larger, soft */
+.candle-flame-outer {
     position: absolute;
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(200, 190, 160, 0.1) 0%, transparent 60%);
-    pointer-events: none;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 52px;
+    background: linear-gradient(to top,
+            rgba(255, 120, 30, 0.5) 0%,
+            rgba(255, 170, 60, 0.25) 40%,
+            rgba(255, 200, 80, 0.08) 70%,
+            transparent 100%);
+    border-radius: 50% 50% 40% 40% / 70% 70% 30% 30%;
+    filter: blur(2px);
+    transform-origin: bottom center;
 }
 
-.moon-svg {
-    display: block;
+/* Inner flame — brighter, smaller */
+.candle-flame-inner {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 36px;
+    background: linear-gradient(to top,
+            rgba(255, 220, 130, 0.8) 0%,
+            rgba(255, 240, 180, 0.4) 40%,
+            rgba(255, 255, 200, 0.1) 70%,
+            transparent 100%);
+    border-radius: 50% 50% 35% 35% / 65% 65% 35% 35%;
+    filter: blur(0.5px);
+    transform-origin: bottom center;
+}
+
+/* Core flicker — tiny bright spot */
+.candle-flame-core {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 10px;
+    background: rgba(255, 255, 230, 0.6);
+    border-radius: 50%;
+    filter: blur(1px);
+}
+
+/* Wick */
+.candle-wick-line {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1.5px;
+    height: 10px;
+    background: rgba(80, 60, 40, 0.7);
+}
+
+/* Wax body */
+.candle-wax-body {
     position: relative;
     z-index: 1;
+    width: 40px;
+    background: linear-gradient(to bottom,
+            rgba(230, 215, 190, 0.1) 0%,
+            rgba(220, 200, 170, 0.07) 50%,
+            rgba(200, 180, 150, 0.04) 100%);
+    border-radius: 2px 2px 3px 3px;
+    border: 1px solid rgba(200, 180, 150, 0.06);
+    flex-shrink: 0;
 }
 
-.moon-star {
+/* Wax pool / base */
+.candle-wax-pool {
+    width: 52px;
+    height: 6px;
+    background: rgba(200, 180, 150, 0.05);
+    border-radius: 0 0 8px 8px;
+    border: 1px solid rgba(200, 180, 150, 0.04);
+    border-top: none;
+}
+
+/* Breathing guide */
+.candle-breath-guide {
     position: absolute;
-    width: 2px;
-    height: 2px;
-    border-radius: 50%;
-    background: #fff;
+    bottom: var(--space-10);
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    color: rgba(200, 149, 108, 0.4);
+    letter-spacing: 0.15em;
+    text-transform: lowercase;
+    white-space: nowrap;
 }
