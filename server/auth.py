@@ -1,13 +1,7 @@
-import os
 from fastapi import HTTPException, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jose import jwt, JWTError
-from dotenv import load_dotenv
 from .database import supabase
 
-load_dotenv()
-
-JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET", "")
 security = HTTPBearer()
 
 
@@ -23,11 +17,9 @@ async def get_current_user(
 ) -> CurrentUser:
     token = credentials.credentials
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"], audience="authenticated")
-        user_id = payload.get("sub")
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token")
-    except JWTError:
+        user_response = supabase.auth.get_user(token)
+        user_id = user_response.user.id
+    except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
     result = supabase.table("profiles").select("*").eq("id", user_id).single().execute()
