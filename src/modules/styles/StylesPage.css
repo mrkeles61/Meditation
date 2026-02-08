@@ -113,6 +113,10 @@
     overflow: hidden;
 }
 
+.proto-dark-center {
+    background: var(--bg-primary);
+}
+
 .proto-empty {
     display: flex;
     align-items: center;
@@ -150,12 +154,6 @@
     color: var(--text-primary);
     font-size: var(--text-sm);
     outline: none;
-    transition: border-color var(--transition-fast);
-}
-
-.mock-group input:focus {
-    border-color: rgba(200, 149, 108, 0.4);
-    box-shadow: 0 0 12px rgba(200, 149, 108, 0.1);
 }
 
 .mock-btn {
@@ -165,12 +163,6 @@
     color: var(--bg-primary);
     font-weight: var(--font-weight-semibold);
     font-size: var(--text-sm);
-    cursor: pointer;
-    transition: opacity var(--transition-fast);
-}
-
-.mock-btn:hover {
-    opacity: 0.85;
 }
 
 .mock-toggle {
@@ -184,7 +176,7 @@
     cursor: pointer;
 }
 
-/* ─── Cosmic Ambient variant ─── */
+/* ─── Cosmic Ambient (Login) ─── */
 .cosmic-ambient-bg {
     background: radial-gradient(ellipse at 30% 20%, #12081f 0%, #0a0a0f 60%, #070710 100%);
 }
@@ -227,4 +219,350 @@
     width: 100%;
     height: 35%;
     pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════
+   DURATION PICKER SHARED
+   ═══════════════════════════════════════════ */
+
+.picker-demo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.picker-demo-label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-muted);
+}
+
+.picker-demo-value {
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
+    color: var(--accent);
+    font-weight: var(--font-weight-semibold);
+}
+
+/* ─── 1. Scroll Wheel ─── */
+.scroll-picker {
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+    touch-action: none;
+    border-radius: var(--radius-lg);
+    width: 200px;
+}
+
+.picker-track {
+    display: flex;
+    flex-direction: column;
+    cursor: grab;
+}
+
+.picker-track:active {
+    cursor: grabbing;
+}
+
+.picker-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-xl);
+    color: var(--text-primary);
+}
+
+.picker-item.active {
+    color: var(--accent);
+    font-weight: var(--font-weight-bold);
+}
+
+.picker-highlight {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 56px;
+    transform: translateY(-50%);
+    border-top: 1px solid rgba(200, 149, 108, 0.2);
+    border-bottom: 1px solid rgba(200, 149, 108, 0.2);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.picker-fade-top,
+.picker-fade-bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 40%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.picker-fade-top {
+    top: 0;
+    background: linear-gradient(to bottom, var(--bg-primary), transparent);
+}
+
+.picker-fade-bottom {
+    bottom: 0;
+    background: linear-gradient(to top, var(--bg-primary), transparent);
+}
+
+/* ─── 2. Radial Dial ─── */
+.radial-dial {
+    position: relative;
+    cursor: pointer;
+    touch-action: none;
+}
+
+.radial-svg {
+    display: block;
+}
+
+.radial-track {
+    fill: none;
+    stroke: rgba(200, 149, 108, 0.08);
+    stroke-width: 2;
+}
+
+.radial-fill {
+    stroke: var(--accent);
+    stroke-linecap: round;
+}
+
+.radial-tick {
+    stroke: rgba(200, 149, 108, 0.15);
+    stroke-width: 1;
+}
+
+.radial-handle {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(200, 149, 108, 0.4);
+    pointer-events: none;
+}
+
+.radial-center-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+}
+
+.radial-number {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.radial-unit {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* ─── 3. iOS Drum Roller ─── */
+.drum-picker {
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+    touch-action: none;
+    width: 200px;
+    border-radius: var(--radius-lg);
+}
+
+.drum-track {
+    display: flex;
+    flex-direction: column;
+    cursor: grab;
+}
+
+.drum-track:active {
+    cursor: grabbing;
+}
+
+.drum-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-xl);
+    color: var(--text-primary);
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
+
+.drum-item.active {
+    color: var(--accent);
+    font-weight: var(--font-weight-bold);
+}
+
+.drum-highlight {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 56px;
+    transform: translateY(-50%);
+    background: rgba(200, 149, 108, 0.04);
+    border-top: 1px solid rgba(200, 149, 108, 0.15);
+    border-bottom: 1px solid rgba(200, 149, 108, 0.15);
+    border-radius: var(--radius-md);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.drum-fade-top,
+.drum-fade-bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 40%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.drum-fade-top {
+    top: 0;
+    background: linear-gradient(to bottom, var(--bg-primary), transparent);
+}
+
+.drum-fade-bottom {
+    bottom: 0;
+    background: linear-gradient(to top, var(--bg-primary), transparent);
+}
+
+/* ─── 4. Grid Tap ─── */
+.grid-picker {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-2);
+    width: 280px;
+}
+
+.grid-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-2);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.grid-cell:hover {
+    border-color: var(--text-muted);
+}
+
+.grid-cell.active {
+    border-color: var(--accent);
+    background: rgba(200, 149, 108, 0.08);
+}
+
+.grid-num {
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+}
+
+.grid-cell.active .grid-num {
+    color: var(--accent);
+}
+
+.grid-unit {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+/* ─── 5. Stepper ─── */
+.stepper-picker {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+}
+
+.stepper-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.stepper-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.stepper-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.stepper-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+    position: relative;
+    overflow: hidden;
+    height: 60px;
+    justify-content: center;
+}
+
+.stepper-value {
+    font-family: var(--font-mono);
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.stepper-unit {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.stepper-bar-track {
+    width: 200px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--bg-tertiary);
+    overflow: hidden;
+}
+
+.stepper-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
 }

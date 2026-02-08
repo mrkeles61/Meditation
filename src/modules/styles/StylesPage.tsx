@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, animate } from 'framer-motion';
 import './StylesPage.css';
 
 /* ═══════════════════════════════════════════
@@ -84,6 +84,310 @@ function CosmicAmbientLogin() {
     );
 }
 
+/* ═══════════════════════════════════════════
+   DURATION PICKER VARIANTS
+   ═══════════════════════════════════════════ */
+
+const DURATIONS = [1, 2, 3, 5, 10, 15, 20, 25, 30, 45, 60];
+const ITEM_HEIGHT = 56;
+const VISIBLE_COUNT = 5;
+const CENTER_OFFSET = (VISIBLE_COUNT - 1) / 2 * ITEM_HEIGHT;
+const CONTAINER_HEIGHT = ITEM_HEIGHT * VISIBLE_COUNT;
+
+/* ── 1. Scroll Wheel (USED) ── */
+function PickerItemBase({
+    label, index, y, isActive, onClick,
+}: {
+    label: string; index: number; y: ReturnType<typeof useSpring>;
+    isActive: boolean; onClick: () => void;
+}) {
+    const itemY = index * ITEM_HEIGHT;
+    const distance = useTransform(y, (val: number) => Math.abs(val + itemY - CENTER_OFFSET));
+    const scale = useTransform(distance, [0, ITEM_HEIGHT, ITEM_HEIGHT * 2], [1, 0.85, 0.7]);
+    const opacity = useTransform(distance, [0, ITEM_HEIGHT, ITEM_HEIGHT * 2], [1, 0.5, 0.2]);
+
+    return (
+        <motion.div
+            className={`picker-item ${isActive ? 'active' : ''}`}
+            style={{ height: ITEM_HEIGHT, scale, opacity }}
+            onClick={onClick}
+        >
+            {label}
+        </motion.div>
+    );
+}
+
+function ScrollWheelPicker() {
+    const [value, setValue] = useState(10);
+    const y = useMotionValue(0);
+    const springY = useSpring(y, { stiffness: 300, damping: 30 });
+
+    useEffect(() => {
+        const idx = DURATIONS.indexOf(value);
+        if (idx >= 0) animate(y, -idx * ITEM_HEIGHT + CENTER_OFFSET, { type: 'spring', stiffness: 300, damping: 30 });
+    }, [value, y]);
+
+    const snap = useCallback(() => {
+        const idx = Math.round((CENTER_OFFSET - y.get()) / ITEM_HEIGHT);
+        const ci = Math.max(0, Math.min(DURATIONS.length - 1, idx));
+        animate(y, -ci * ITEM_HEIGHT + CENTER_OFFSET, { type: 'spring', stiffness: 300, damping: 30 });
+        setValue(DURATIONS[ci]);
+    }, [y]);
+
+    return (
+        <div className="proto-frame proto-dark-center">
+            <div className="picker-demo-wrap">
+                <p className="picker-demo-label">Duration</p>
+                <div className="scroll-picker" style={{ height: CONTAINER_HEIGHT }}>
+                    <div className="picker-highlight" />
+                    <div className="picker-fade-top" />
+                    <div className="picker-fade-bottom" />
+                    <motion.div
+                        className="picker-track"
+                        style={{ y: springY }}
+                        drag="y"
+                        dragConstraints={{ top: -(DURATIONS.length - 1) * ITEM_HEIGHT + CENTER_OFFSET, bottom: CENTER_OFFSET }}
+                        dragElastic={0.1}
+                        onDragEnd={snap}
+                    >
+                        {DURATIONS.map((d, i) => (
+                            <PickerItemBase key={d} label={`${d} min`} index={i} y={springY} isActive={d === value} onClick={() => setValue(d)} />
+                        ))}
+                    </motion.div>
+                </div>
+                <p className="picker-demo-value">{value} minutes</p>
+            </div>
+        </div>
+    );
+}
+
+/* ── 2. Radial Dial ── */
+function RadialDialPicker() {
+    const [value, setValue] = useState(10);
+    const [dragging, setDragging] = useState(false);
+    const dialRef = useRef<HTMLDivElement>(null);
+    const RADIUS = 110;
+
+    function angleFromEvent(e: React.MouseEvent | React.TouchEvent) {
+        if (!dialRef.current) return 0;
+        const rect = dialRef.current.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+        const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+        let angle = Math.atan2(clientY - cy, clientX - cx) * (180 / Math.PI) + 90;
+        if (angle < 0) angle += 360;
+        return angle;
+    }
+
+    function angleToMinutes(angle: number): number {
+        const frac = angle / 360;
+        const raw = Math.round(frac * 60);
+        return Math.max(1, Math.min(60, raw));
+    }
+
+    function handleInteract(e: React.MouseEvent | React.TouchEvent) {
+        const angle = angleFromEvent(e);
+        setValue(angleToMinutes(angle));
+    }
+
+    const angleDeg = (value / 60) * 360;
+    const handleX = RADIUS + RADIUS * Math.sin((angleDeg * Math.PI) / 180);
+    const handleY = RADIUS - RADIUS * Math.cos((angleDeg * Math.PI) / 180);
+
+    // SVG arc
+    const endX = RADIUS + RADIUS * Math.sin((angleDeg * Math.PI) / 180);
+    const endY = RADIUS - RADIUS * Math.cos((angleDeg * Math.PI) / 180);
+    const largeArc = angleDeg > 180 ? 1 : 0;
+    const arcPath = `M ${RADIUS} 0 A ${RADIUS} ${RADIUS} 0 ${largeArc} 1 ${endX} ${endY}`;
+
+    return (
+        <div className="proto-frame proto-dark-center">
+            <div className="picker-demo-wrap">
+                <p className="picker-demo-label">Duration</p>
+                <div
+                    ref={dialRef}
+                    className="radial-dial"
+                    style={{ width: RADIUS * 2, height: RADIUS * 2 }}
+                    onMouseDown={(e) => { setDragging(true); handleInteract(e); }}
+                    onMouseMove={(e) => dragging && handleInteract(e)}
+                    onMouseUp={() => setDragging(false)}
+                    onMouseLeave={() => setDragging(false)}
+                    onTouchStart={(e) => { setDragging(true); handleInteract(e); }}
+                    onTouchMove={(e) => dragging && handleInteract(e)}
+                    onTouchEnd={() => setDragging(false)}
+                >
+                    <svg width={RADIUS * 2} height={RADIUS * 2} className="radial-svg">
+                        <circle cx={RADIUS} cy={RADIUS} r={RADIUS - 2} className="radial-track" />
+                        <path d={arcPath} className="radial-fill" fill="none" strokeWidth={4} />
+                        {/* Tick marks */}
+                        {Array.from({ length: 12 }, (_, i) => {
+                            const a = (i * 30 * Math.PI) / 180;
+                            const x1 = RADIUS + (RADIUS - 10) * Math.sin(a);
+                            const y1 = RADIUS - (RADIUS - 10) * Math.cos(a);
+                            const x2 = RADIUS + (RADIUS - 2) * Math.sin(a);
+                            const y2 = RADIUS - (RADIUS - 2) * Math.cos(a);
+                            return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} className="radial-tick" />;
+                        })}
+                    </svg>
+                    {/* Handle */}
+                    <motion.div
+                        className="radial-handle"
+                        style={{ left: handleX - 10, top: handleY - 10 }}
+                        animate={{ scale: dragging ? 1.3 : 1 }}
+                    />
+                    {/* Center value */}
+                    <div className="radial-center-value">
+                        <span className="radial-number">{value}</span>
+                        <span className="radial-unit">min</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ── 3. iOS Drum Roller (3D perspective) ── */
+function DrumRollerPicker() {
+    const [value, setValue] = useState(10);
+    const y = useMotionValue(0);
+    const springY = useSpring(y, { stiffness: 200, damping: 25 });
+
+    useEffect(() => {
+        const idx = DURATIONS.indexOf(value);
+        if (idx >= 0) animate(y, -idx * ITEM_HEIGHT + CENTER_OFFSET, { type: 'spring', stiffness: 200, damping: 25 });
+    }, [value, y]);
+
+    const snap = useCallback(() => {
+        const idx = Math.round((CENTER_OFFSET - y.get()) / ITEM_HEIGHT);
+        const ci = Math.max(0, Math.min(DURATIONS.length - 1, idx));
+        animate(y, -ci * ITEM_HEIGHT + CENTER_OFFSET, { type: 'spring', stiffness: 200, damping: 25 });
+        setValue(DURATIONS[ci]);
+    }, [y]);
+
+    return (
+        <div className="proto-frame proto-dark-center">
+            <div className="picker-demo-wrap">
+                <p className="picker-demo-label">Duration</p>
+                <div className="drum-picker" style={{ height: CONTAINER_HEIGHT }}>
+                    <div className="drum-highlight" />
+                    <div className="drum-fade-top" />
+                    <div className="drum-fade-bottom" />
+                    <motion.div
+                        className="drum-track"
+                        style={{ y: springY, perspective: 300 }}
+                        drag="y"
+                        dragConstraints={{ top: -(DURATIONS.length - 1) * ITEM_HEIGHT + CENTER_OFFSET, bottom: CENTER_OFFSET }}
+                        dragElastic={0.08}
+                        onDragEnd={snap}
+                    >
+                        {DURATIONS.map((d, i) => (
+                            <DrumItem key={d} label={`${d} min`} index={i} y={springY} isActive={d === value} onClick={() => setValue(d)} />
+                        ))}
+                    </motion.div>
+                </div>
+                <p className="picker-demo-value">{value} minutes</p>
+            </div>
+        </div>
+    );
+}
+
+function DrumItem({
+    label, index, y, isActive, onClick,
+}: {
+    label: string; index: number; y: ReturnType<typeof useSpring>;
+    isActive: boolean; onClick: () => void;
+}) {
+    const itemY = index * ITEM_HEIGHT;
+    const distance = useTransform(y, (val: number) => (val + itemY - CENTER_OFFSET) / ITEM_HEIGHT);
+    const rotateX = useTransform(distance, [-3, 0, 3], [60, 0, -60]);
+    const opacity = useTransform(distance, [-2, -1, 0, 1, 2], [0, 0.4, 1, 0.4, 0]);
+    const scale = useTransform(distance, [-2, 0, 2], [0.8, 1, 0.8]);
+
+    return (
+        <motion.div
+            className={`drum-item ${isActive ? 'active' : ''}`}
+            style={{ height: ITEM_HEIGHT, rotateX, opacity, scale, transformOrigin: 'center center' }}
+            onClick={onClick}
+        >
+            {label}
+        </motion.div>
+    );
+}
+
+/* ── 4. Grid Tap Selector ── */
+function GridTapPicker() {
+    const [value, setValue] = useState(10);
+
+    return (
+        <div className="proto-frame proto-dark-center">
+            <div className="picker-demo-wrap">
+                <p className="picker-demo-label">Duration</p>
+                <div className="grid-picker">
+                    {DURATIONS.map((d) => (
+                        <motion.button
+                            key={d}
+                            className={`grid-cell ${value === d ? 'active' : ''}`}
+                            onClick={() => setValue(d)}
+                            whileTap={{ scale: 0.9 }}
+                            animate={value === d ? { scale: [1, 1.08, 1], borderColor: 'rgba(200, 149, 108, 0.6)' } : {}}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <span className="grid-num">{d}</span>
+                            <span className="grid-unit">min</span>
+                        </motion.button>
+                    ))}
+                </div>
+                <p className="picker-demo-value">{value} minutes</p>
+            </div>
+        </div>
+    );
+}
+
+/* ── 5. Stepper with Spring ── */
+function StepperPicker() {
+    const [idx, setIdx] = useState(DURATIONS.indexOf(10));
+    const value = DURATIONS[idx];
+
+    function inc() { setIdx((i) => Math.min(DURATIONS.length - 1, i + 1)); }
+    function dec() { setIdx((i) => Math.max(0, i - 1)); }
+
+    return (
+        <div className="proto-frame proto-dark-center">
+            <div className="picker-demo-wrap">
+                <p className="picker-demo-label">Duration</p>
+                <div className="stepper-picker">
+                    <motion.button className="stepper-btn" onClick={dec} whileTap={{ scale: 0.85 }} disabled={idx === 0}>−</motion.button>
+                    <div className="stepper-display">
+                        <AnimatePresence mode="wait">
+                            <motion.span
+                                key={value}
+                                className="stepper-value"
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                exit={{ y: -20, opacity: 0 }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                            >
+                                {value}
+                            </motion.span>
+                        </AnimatePresence>
+                        <span className="stepper-unit">min</span>
+                    </div>
+                    <motion.button className="stepper-btn" onClick={inc} whileTap={{ scale: 0.85 }} disabled={idx === DURATIONS.length - 1}>+</motion.button>
+                </div>
+                {/* Progress bar */}
+                <div className="stepper-bar-track">
+                    <motion.div
+                        className="stepper-bar-fill"
+                        animate={{ width: `${((idx) / (DURATIONS.length - 1)) * 100}%` }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+
 /* ─── Category Registry ─── */
 const CATEGORIES: Category[] = [
     {
@@ -94,9 +398,18 @@ const CATEGORIES: Category[] = [
             { id: 'cosmic-ambient', label: 'Cosmic Ambient', tag: 'USED', component: <CosmicAmbientLogin /> },
         ],
     },
-    // Future categories:
-    // { id: 'cards', label: 'Cards', icon: '▢', variants: [] },
-    // { id: 'modals', label: 'Modals', icon: '◻', variants: [] },
+    {
+        id: 'duration-picker',
+        label: 'Duration Picker',
+        icon: '⏱',
+        variants: [
+            { id: 'scroll-wheel', label: 'Scroll Wheel', tag: 'USED', component: <ScrollWheelPicker /> },
+            { id: 'radial-dial', label: 'Radial Dial', component: <RadialDialPicker /> },
+            { id: 'drum-roller', label: 'iOS Drum Roller', component: <DrumRollerPicker /> },
+            { id: 'grid-tap', label: 'Grid Tap', component: <GridTapPicker /> },
+            { id: 'stepper', label: 'Stepper', component: <StepperPicker /> },
+        ],
+    },
 ];
 
 /* ─── Page ─── */
