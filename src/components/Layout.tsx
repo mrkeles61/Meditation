@@ -6,6 +6,7 @@ import './Layout.css';
 const NAV_ITEMS = [
     { to: '/', icon: '◉', label: 'Dashboard' },
     { to: '/meditation', icon: '◎', label: 'Meditation' },
+    { to: '/styles', icon: '◈', label: 'Styles' },
 ];
 
 export function Layout() {

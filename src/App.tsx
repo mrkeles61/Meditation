@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { LoginPage } from './modules/auth/LoginPage';
 import { Dashboard } from './modules/dashboard/index';
 import { MeditationPage } from './modules/meditation/index';
+import { StylesPage } from './modules/styles/StylesPage';
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
           <Route element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="meditation" element={<MeditationPage />} />
+            <Route path="styles" element={<StylesPage />} />
           </Route>
           <Route path="/login" element={<LoginPage />} />
         </Routes>
