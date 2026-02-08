@@ -126,7 +126,7 @@
     font-size: var(--text-sm);
 }
 
-/* ─── Shared Mock Form ─── */
+/* ─── Mock Form ─── */
 .mock-form {
     display: flex;
     flex-direction: column;
@@ -176,7 +176,7 @@
     cursor: pointer;
 }
 
-/* ─── Cosmic Ambient (Login) ─── */
+/* ─── Cosmic Ambient ─── */
 .cosmic-ambient-bg {
     background: radial-gradient(ellipse at 30% 20%, #12081f 0%, #0a0a0f 60%, #070710 100%);
 }
@@ -222,9 +222,8 @@
 }
 
 /* ═══════════════════════════════════════════
-   DURATION PICKER SHARED
+   DURATION PICKERS — Shared
    ═══════════════════════════════════════════ */
-
 .picker-demo-wrap {
     display: flex;
     flex-direction: column;
@@ -314,113 +313,257 @@
     background: linear-gradient(to top, var(--bg-primary), transparent);
 }
 
-/* ─── Radial Dial ─── */
-.radial-dial {
+/* ─── Horizontal Carousel ─── */
+.carousel-picker {
     position: relative;
-    cursor: pointer;
+    overflow: hidden;
+    width: 320px;
+    height: 80px;
+    display: flex;
+    align-items: center;
     touch-action: none;
 }
 
-.radial-svg {
-    display: block;
+.carousel-track {
+    display: flex;
+    align-items: center;
+    cursor: grab;
+    padding-left: 120px;
 }
 
-.radial-track {
-    fill: none;
-    stroke: rgba(200, 149, 108, 0.08);
-    stroke-width: 2;
+.carousel-track:active {
+    cursor: grabbing;
 }
 
-.radial-fill {
-    stroke: var(--accent);
-    stroke-linecap: round;
+.carousel-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: var(--radius-md);
+    cursor: pointer;
 }
 
-.radial-tick {
-    stroke: rgba(200, 149, 108, 0.15);
-    stroke-width: 1;
+.carousel-card.active .carousel-num {
+    color: var(--accent);
 }
 
-.radial-handle {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 12px rgba(200, 149, 108, 0.4);
-    pointer-events: none;
-}
-
-.radial-center-value {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    pointer-events: none;
-}
-
-.radial-number {
-    display: block;
+.carousel-num {
     font-family: var(--font-mono);
-    font-size: var(--text-4xl);
+    font-size: var(--text-2xl);
     font-weight: var(--font-weight-bold);
     color: var(--text-primary);
     line-height: 1;
 }
 
-.radial-unit {
-    font-size: var(--text-sm);
+.carousel-unit {
+    font-size: 10px;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
 }
 
-/* ─── Stepper ─── */
-.stepper-picker {
-    display: flex;
-    align-items: center;
-    gap: var(--space-6);
+.carousel-indicator {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 60px;
+    border: 1px solid rgba(200, 149, 108, 0.2);
+    border-radius: var(--radius-md);
+    pointer-events: none;
+    z-index: 1;
 }
 
-.stepper-btn {
-    width: 48px;
-    height: 48px;
+.carousel-fade-left,
+.carousel-fade-right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.carousel-fade-left {
+    left: 0;
+    background: linear-gradient(to right, var(--bg-primary), transparent);
+}
+
+.carousel-fade-right {
+    right: 0;
+    background: linear-gradient(to left, var(--bg-primary), transparent);
+}
+
+/* ─── Clock Face ─── */
+.clock-face {
+    position: relative;
+}
+
+.clock-svg {
+    display: block;
+}
+
+.clock-ring {
+    fill: none;
+    stroke: rgba(200, 149, 108, 0.08);
+    stroke-width: 2;
+}
+
+.clock-hand {
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.clock-dot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: var(--text-2xl);
+    font-family: var(--font-mono);
+    font-size: 11px;
     font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
+    color: var(--text-secondary);
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
     cursor: pointer;
     transition: all var(--transition-fast);
 }
 
-.stepper-btn:hover:not(:disabled) {
+.clock-dot:hover {
     border-color: var(--accent);
-    color: var(--accent);
+    color: var(--text-primary);
 }
 
-.stepper-btn:disabled {
+.clock-dot.active {
+    background: var(--accent);
+    color: var(--bg-primary);
+    border-color: var(--accent);
+}
+
+/* ─── Smooth Slider ─── */
+.slider-container {
+    width: 300px;
+    position: relative;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+}
+
+.slider-mark {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+    min-width: 20px;
+    text-align: center;
+}
+
+.slider-mark.active {
+    color: var(--accent);
+    font-weight: var(--font-weight-bold);
+}
+
+.slider-track {
+    position: relative;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--bg-tertiary);
+}
+
+.slider-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent);
+}
+
+.slider-thumb {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px rgba(200, 149, 108, 0.3);
+    pointer-events: none;
+}
+
+.slider-input {
+    position: absolute;
+    top: -6px;
+    left: 0;
+    width: 100%;
+    height: 16px;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* ─── Card Flip ─── */
+.flip-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.flip-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    cursor: pointer;
+}
+
+.flip-arrow:hover:not(:disabled) {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.flip-arrow:disabled {
     opacity: 0.3;
     cursor: not-allowed;
 }
 
-.stepper-display {
+.flip-card-container {
+    width: 120px;
+    height: 100px;
+    perspective: 600px;
+    overflow: hidden;
+}
+
+.flip-card {
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 80px;
-    position: relative;
-    overflow: hidden;
-    height: 60px;
     justify-content: center;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
 }
 
-.stepper-value {
+.flip-num {
     font-family: var(--font-mono);
     font-size: var(--text-4xl);
     font-weight: var(--font-weight-bold);
@@ -428,31 +571,50 @@
     line-height: 1;
 }
 
-.stepper-unit {
+.flip-unit {
     font-size: var(--text-xs);
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
 }
 
-.stepper-bar-track {
-    width: 200px;
-    height: 4px;
-    border-radius: 2px;
+/* ─── Bubble Select ─── */
+.bubble-field {
+    position: relative;
+    width: 320px;
+    height: 260px;
+}
+
+.bubble {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-secondary);
     background: var(--bg-tertiary);
-    overflow: hidden;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
 }
 
-.stepper-bar-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
+.bubble:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+
+.bubble.active {
+    background: rgba(200, 149, 108, 0.12);
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 /* ═══════════════════════════════════════════
-   TIMER ANIMATIONS
+   TIMER ANIMATIONS — Relaxing
    ═══════════════════════════════════════════ */
-
 .timer-demo-wrap {
     display: flex;
     flex-direction: column;
@@ -468,60 +630,171 @@
     color: var(--text-muted);
 }
 
-/* ─── Orbital Ring ─── */
-.orbital-svg {
-    display: block;
-}
-
-/* ─── Breathing Blob ─── */
-.blob-container {
+/* ─── Water Ripple ─── */
+.ripple-container {
     position: relative;
-    width: 200px;
-    height: 200px;
+    width: 240px;
+    height: 240px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.blob-shape {
+.ripple-ring {
     position: absolute;
-}
-
-.blob-glow {
-    position: absolute;
-    width: 60px;
-    height: 60px;
+    width: 180px;
+    height: 180px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(200, 149, 108, 0.4) 0%, transparent 70%);
-    pointer-events: none;
-}
-
-/* ─── Particle Drift ─── */
-.particle-field {
-    position: relative;
-    width: 220px;
-    height: 220px;
-}
-
-.particle-dot {
-    position: absolute;
-    border-radius: 50%;
-    background: var(--accent);
-}
-
-.particle-center-glow {
-    position: absolute;
+    border: 1px solid rgba(200, 149, 108, 0.15);
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80px;
-    height: 80px;
+}
+
+.ripple-center {
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(200, 149, 108, 0.2) 0%, transparent 70%);
+    background: rgba(200, 149, 108, 0.4);
+    position: relative;
+    z-index: 1;
+}
+
+/* ─── Zen Enso ─── */
+.enso-svg {
+    display: block;
+}
+
+/* ─── Aurora Waves ─── */
+.aurora-bg {
+    background: linear-gradient(180deg, #060612 0%, #0a0a14 100%);
+}
+
+.aurora-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    justify-content: flex-end;
+    padding-bottom: var(--space-8);
+}
+
+.aurora-layers {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+.aurora-layer {
+    position: absolute;
+    width: 160%;
+    height: 50%;
+    left: -30%;
+    filter: blur(60px);
+    border-radius: 50%;
+}
+
+.aurora-1 {
+    top: 10%;
+    background: radial-gradient(ellipse, rgba(100, 200, 180, 0.3) 0%, transparent 70%);
+}
+
+.aurora-2 {
+    top: 25%;
+    background: radial-gradient(ellipse, rgba(120, 140, 220, 0.25) 0%, transparent 70%);
+}
+
+.aurora-3 {
+    top: 15%;
+    background: radial-gradient(ellipse, rgba(200, 149, 108, 0.2) 0%, transparent 70%);
+}
+
+/* ─── Candle Flame ─── */
+.candle-scene {
+    position: relative;
+    width: 80px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.candle-glow {
+    position: absolute;
+    top: 20%;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 180, 80, 0.15) 0%, transparent 70%);
     pointer-events: none;
 }
 
-/* ─── Arc Dissolve ─── */
-.arc-svg {
+.candle-flame {
+    position: relative;
+    width: 16px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    transform-origin: bottom center;
+    z-index: 2;
+}
+
+.flame-inner {
+    position: absolute;
+    inset: 20% 25%;
+    border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
+    background: rgba(255, 220, 120, 0.7);
+}
+
+.flame-outer {
+    position: absolute;
+    inset: 0;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: linear-gradient(to top, rgba(255, 140, 50, 0.6), rgba(255, 200, 80, 0.3), transparent);
+}
+
+.candle-wick {
+    width: 2px;
+    height: 8px;
+    background: rgba(100, 80, 60, 0.6);
+    z-index: 1;
+}
+
+.candle-body {
+    width: 32px;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(230, 210, 180, 0.12), rgba(200, 180, 150, 0.06));
+    border-radius: 3px 3px 4px 4px;
+    border: 1px solid rgba(200, 180, 150, 0.08);
+}
+
+/* ─── Moon Phase ─── */
+.moon-scene {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.moon-glow {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200, 190, 160, 0.1) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.moon-svg {
     display: block;
+    position: relative;
+    z-index: 1;
+}
+
+.moon-star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: #fff;
 }
