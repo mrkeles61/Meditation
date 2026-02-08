@@ -36,6 +36,45 @@
     line-height: var(--line-height-relaxed);
 }
 
+/* Stats row */
+.completion-stats {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-2);
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius-lg);
+    background: rgba(200, 149, 108, 0.04);
+    border: 1px solid rgba(200, 149, 108, 0.08);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.stat-value {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(200, 149, 108, 0.1);
+}
+
 .completion-button {
     margin-top: var(--space-4);
     padding: var(--space-3) var(--space-8);

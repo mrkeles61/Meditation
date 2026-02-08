@@ -33,74 +33,78 @@
     letter-spacing: 0.08em;
 }
 
-/* ─── Scroll Picker ─── */
-.scroll-picker {
-    position: relative;
-    overflow: hidden;
-    user-select: none;
-    touch-action: none;
-    border-radius: var(--radius-lg);
-    margin: 0 auto;
-    max-width: 200px;
-}
-
-.picker-track {
+/* ─── Clock Face Picker ─── */
+.clock-picker-wrap {
     display: flex;
     flex-direction: column;
-    cursor: grab;
-}
-
-.picker-track:active {
-    cursor: grabbing;
-}
-
-.picker-item {
-    display: flex;
     align-items: center;
-    justify-content: center;
-    font-family: var(--font-mono);
-    font-size: var(--text-xl);
-    color: var(--text-primary);
-    transition: color 0.15s;
+    gap: var(--space-3);
+}
+
+.clock-svg {
+    display: block;
+    cursor: default;
+}
+
+.clock-svg g {
     cursor: pointer;
 }
 
-.picker-item.active {
+.clock-value {
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
     color: var(--accent);
+    font-weight: var(--font-weight-semibold);
+}
+
+/* ─── Suggestion Cards ─── */
+.suggestion-cards {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.suggestion-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    min-width: 48px;
+}
+
+.suggestion-card:hover {
+    border-color: var(--text-muted);
+}
+
+.suggestion-card.active {
+    border-color: var(--accent);
+    background: rgba(200, 149, 108, 0.06);
+}
+
+.suggestion-num {
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
     font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    line-height: 1;
 }
 
-.picker-highlight {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 56px;
-    transform: translateY(-50%);
-    border-top: 1px solid rgba(200, 149, 108, 0.2);
-    border-bottom: 1px solid rgba(200, 149, 108, 0.2);
-    pointer-events: none;
-    z-index: 1;
+.suggestion-card.active .suggestion-num {
+    color: var(--accent);
 }
 
-.picker-fade-top,
-.picker-fade-bottom {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 40%;
-    pointer-events: none;
-    z-index: 2;
-}
-
-.picker-fade-top {
-    top: 0;
-    background: linear-gradient(to bottom, var(--bg-primary), transparent);
-}
-
-.picker-fade-bottom {
-    bottom: 0;
-    background: linear-gradient(to top, var(--bg-primary), transparent);
+.suggestion-unit {
+    font-size: 9px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 /* ─── Sound Options ─── */

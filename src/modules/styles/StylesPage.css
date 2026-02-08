@@ -313,61 +313,18 @@
     background: linear-gradient(to top, var(--bg-primary), transparent);
 }
 
-/* ─── Clock Face ─── */
-.clock-face {
-    position: relative;
-}
-
+/* ─── Clock Face (pure SVG) ─── */
 .clock-svg {
     display: block;
+    cursor: default;
 }
 
-.clock-ring {
-    fill: none;
-    stroke: rgba(200, 149, 108, 0.06);
-    stroke-width: 1.5;
-}
-
-.clock-tick {
-    stroke: rgba(200, 149, 108, 0.1);
-    stroke-width: 1;
-}
-
-.clock-hand {
-    stroke: var(--accent);
-    stroke-width: 2;
-    stroke-linecap: round;
-}
-
-.clock-dot {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: var(--font-weight-bold);
-    color: var(--text-secondary);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
+.clock-svg g {
     cursor: pointer;
-    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
 }
 
-.clock-dot:hover {
-    border-color: var(--accent);
-    color: var(--text-primary);
-}
-
-.clock-dot.active {
-    background: var(--accent);
-    color: var(--bg-primary);
-    border-color: var(--accent);
-    box-shadow: 0 0 12px rgba(200, 149, 108, 0.25);
+.clock-svg g:hover circle:nth-child(2) {
+    fill: rgba(200, 149, 108, 0.08);
 }
 
 /* ─── Suggestion Cards ─── */
@@ -421,138 +378,27 @@
 }
 
 /* ═══════════════════════════════════════════
-   CANDLE MEDITATION TIMER
+   CANDLE MEDITATION TIMER — Canvas
    ═══════════════════════════════════════════ */
-
-.candle-timer-scene {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
+.candle-bg {
+    background: radial-gradient(ellipse at 50% 60%, #110e0a 0%, #0a0a0f 50%, #070710 100%);
     flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    padding-bottom: var(--space-8);
-    background: radial-gradient(ellipse at 50% 30%, #110e0a 0%, #0a0a0f 50%, #070710 100%);
 }
 
-/* Ambient glow from flame */
-.candle-ambient-glow {
-    position: absolute;
-    top: 15%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 250px;
-    height: 250px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 170, 60, 0.08) 0%, rgba(255, 140, 40, 0.02) 50%, transparent 70%);
-    pointer-events: none;
+.candle-canvas {
+    width: 300px;
+    height: 500px;
+    display: block;
 }
 
-/* Flame group — positioned at top of wax */
-.candle-flame-group {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 24px;
-    height: 60px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-}
-
-/* Outer flame — warm orange, larger, soft */
-.candle-flame-outer {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20px;
-    height: 52px;
-    background: linear-gradient(to top,
-            rgba(255, 120, 30, 0.5) 0%,
-            rgba(255, 170, 60, 0.25) 40%,
-            rgba(255, 200, 80, 0.08) 70%,
-            transparent 100%);
-    border-radius: 50% 50% 40% 40% / 70% 70% 30% 30%;
-    filter: blur(2px);
-    transform-origin: bottom center;
-}
-
-/* Inner flame — brighter, smaller */
-.candle-flame-inner {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 10px;
-    height: 36px;
-    background: linear-gradient(to top,
-            rgba(255, 220, 130, 0.8) 0%,
-            rgba(255, 240, 180, 0.4) 40%,
-            rgba(255, 255, 200, 0.1) 70%,
-            transparent 100%);
-    border-radius: 50% 50% 35% 35% / 65% 65% 35% 35%;
-    filter: blur(0.5px);
-    transform-origin: bottom center;
-}
-
-/* Core flicker — tiny bright spot */
-.candle-flame-core {
-    position: absolute;
-    bottom: 2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 4px;
-    height: 10px;
-    background: rgba(255, 255, 230, 0.6);
-    border-radius: 50%;
-    filter: blur(1px);
-}
-
-/* Wick */
-.candle-wick-line {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 1.5px;
-    height: 10px;
-    background: rgba(80, 60, 40, 0.7);
-}
-
-/* Wax body */
-.candle-wax-body {
-    position: relative;
-    z-index: 1;
-    width: 40px;
-    background: linear-gradient(to bottom,
-            rgba(230, 215, 190, 0.1) 0%,
-            rgba(220, 200, 170, 0.07) 50%,
-            rgba(200, 180, 150, 0.04) 100%);
-    border-radius: 2px 2px 3px 3px;
-    border: 1px solid rgba(200, 180, 150, 0.06);
-    flex-shrink: 0;
-}
-
-/* Wax pool / base */
-.candle-wax-pool {
-    width: 52px;
-    height: 6px;
-    background: rgba(200, 180, 150, 0.05);
-    border-radius: 0 0 8px 8px;
-    border: 1px solid rgba(200, 180, 150, 0.04);
-    border-top: none;
-}
-
-/* Breathing guide */
 .candle-breath-guide {
     position: absolute;
-    bottom: var(--space-10);
+    bottom: var(--space-8);
     left: 50%;
     transform: translateX(-50%);
     font-family: var(--font-display);
     font-size: var(--text-sm);
-    color: rgba(200, 149, 108, 0.4);
+    color: rgba(200, 149, 108, 0.35);
     letter-spacing: 0.15em;
     text-transform: lowercase;
     white-space: nowrap;

@@ -1,106 +1,124 @@
-import { useRef, useEffect, useCallback } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, animate } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useMeditationStore, type SoundType } from '../store';
 import './SetupScreen.css';
 
 /* ─── Duration options (in minutes) ─── */
 const DURATIONS = [1, 2, 3, 5, 10, 15, 20, 25, 30, 45, 60];
-const ITEM_HEIGHT = 56;
-const VISIBLE_COUNT = 5;
-const CONTAINER_HEIGHT = ITEM_HEIGHT * VISIBLE_COUNT;
+const QUICK_SUGGESTIONS = [5, 10, 15, 20, 30];
 
 const SOUNDS: { id: SoundType; label: string }[] = [
     { id: 'rain', label: '🌧 Rain' },
     { id: 'ocean', label: '🌊 Ocean' },
     { id: 'singing-bowl', label: '🔔 Bowl' },
+    { id: 'fireplace', label: '🔥 Fire' },
+    { id: 'forest', label: '🌲 Forest' },
     { id: 'silence', label: '🤫 Silence' },
 ];
 
-/* ─── Scroll Wheel Picker ─── */
-function ScrollPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const y = useMotionValue(0);
-    const springY = useSpring(y, { stiffness: 300, damping: 30 });
+/* ─── Clock Face Picker ─── */
+function ClockFacePicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+    const SIZE = 240;
+    const CX = SIZE / 2;
+    const CY = SIZE / 2;
+    const DOT_R = 82;
+    const HAND_R = 52;
+    const TICK_INNER = 92;
+    const TICK_OUTER = 99;
+    const DOT_SIZE = 26;
 
-    const currentIndex = DURATIONS.indexOf(value);
-    const centerOffset = (VISIBLE_COUNT - 1) / 2 * ITEM_HEIGHT;
+    const positions = DURATIONS.map((d, i) => {
+        const angle = (i / DURATIONS.length) * 360 - 90;
+        const rad = (angle * Math.PI) / 180;
+        return { d, cx: CX + DOT_R * Math.cos(rad), cy: CY + DOT_R * Math.sin(rad) };
+    });
 
-    // Sync position when value changes externally
-    useEffect(() => {
-        const idx = DURATIONS.indexOf(value);
-        if (idx >= 0) {
-            const target = -idx * ITEM_HEIGHT + centerOffset;
-            animate(y, target, { type: 'spring', stiffness: 300, damping: 30 });
-        }
-    }, [value, centerOffset, y]);
-
-    const snapToNearest = useCallback(() => {
-        const currentY = y.get();
-        const idx = Math.round((centerOffset - currentY) / ITEM_HEIGHT);
-        const clampedIdx = Math.max(0, Math.min(DURATIONS.length - 1, idx));
-        const target = -clampedIdx * ITEM_HEIGHT + centerOffset;
-        animate(y, target, { type: 'spring', stiffness: 300, damping: 30 });
-        onChange(DURATIONS[clampedIdx]);
-    }, [y, centerOffset, onChange]);
+    const activeIdx = DURATIONS.indexOf(value);
+    const activeAngle = (activeIdx / DURATIONS.length) * 360 - 90;
+    const handRad = (activeAngle * Math.PI) / 180;
+    const handX = CX + HAND_R * Math.cos(handRad);
+    const handY = CY + HAND_R * Math.sin(handRad);
 
     return (
-        <div className="scroll-picker" style={{ height: CONTAINER_HEIGHT }}>
-            <div className="picker-highlight" />
-            <div className="picker-fade-top" />
-            <div className="picker-fade-bottom" />
-            <motion.div
-                ref={containerRef}
-                className="picker-track"
-                style={{ y: springY }}
-                drag="y"
-                dragConstraints={{
-                    top: -(DURATIONS.length - 1) * ITEM_HEIGHT + centerOffset,
-                    bottom: centerOffset,
-                }}
-                dragElastic={0.1}
-                onDragEnd={snapToNearest}
-            >
-                {DURATIONS.map((dur, i) => (
-                    <PickerItem
-                        key={dur}
-                        label={`${dur} min`}
-                        index={i}
-                        y={springY}
-                        centerOffset={centerOffset}
-                        isActive={i === currentIndex}
-                        onClick={() => onChange(dur)}
-                    />
+        <div className="clock-picker-wrap">
+            <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="clock-svg">
+                {/* Outer ring */}
+                <circle cx={CX} cy={CY} r={TICK_OUTER + 6} fill="none" stroke="rgba(200,149,108,0.06)" strokeWidth={1} />
+
+                {/* 12 tick marks */}
+                {Array.from({ length: 12 }, (_, i) => {
+                    const a = (i * 30 - 90) * Math.PI / 180;
+                    return <line key={i}
+                        x1={CX + TICK_INNER * Math.cos(a)} y1={CY + TICK_INNER * Math.sin(a)}
+                        x2={CX + TICK_OUTER * Math.cos(a)} y2={CY + TICK_OUTER * Math.sin(a)}
+                        stroke="rgba(200,149,108,0.1)" strokeWidth={1} />;
+                })}
+
+                {/* Animated hand */}
+                <motion.line
+                    x1={CX} y1={CY} x2={handX} y2={handY}
+                    stroke="var(--accent)" strokeWidth={2} strokeLinecap="round"
+                    initial={false}
+                    animate={{ x2: handX, y2: handY }}
+                    transition={{ type: 'spring', stiffness: 180, damping: 18 }}
+                />
+
+                {/* Center hub */}
+                <circle cx={CX} cy={CY} r={4} fill="var(--accent)" />
+                <circle cx={CX} cy={CY} r={1.5} fill="var(--bg-primary)" />
+
+                {/* Duration dots */}
+                {positions.map((p) => {
+                    const active = p.d === value;
+                    return (
+                        <g key={p.d} onClick={() => onChange(p.d)} style={{ cursor: 'pointer' }}>
+                            <circle cx={p.cx} cy={p.cy} r={DOT_SIZE / 2 + 4} fill="transparent" />
+                            <circle cx={p.cx} cy={p.cy} r={DOT_SIZE / 2}
+                                fill={active ? 'var(--accent)' : 'var(--bg-secondary)'}
+                                stroke={active ? 'var(--accent)' : 'rgba(200,149,108,0.12)'}
+                                strokeWidth={1} />
+                            {active && (
+                                <circle cx={p.cx} cy={p.cy} r={DOT_SIZE / 2 + 3}
+                                    fill="none" stroke="rgba(200,149,108,0.2)" strokeWidth={1} />
+                            )}
+                            <text x={p.cx} y={p.cy} textAnchor="middle" dominantBaseline="central"
+                                fill={active ? 'var(--bg-primary)' : 'var(--text-secondary)'}
+                                fontSize={10} fontWeight={700} fontFamily="var(--font-mono)"
+                                style={{ pointerEvents: 'none' }}>
+                                {p.d}
+                            </text>
+                        </g>
+                    );
+                })}
+            </svg>
+
+            {/* Selected value */}
+            <AnimatePresence mode="wait">
+                <motion.p key={value} className="clock-value"
+                    initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -6, opacity: 0 }} transition={{ duration: 0.12 }}>
+                    {value} min
+                </motion.p>
+            </AnimatePresence>
+
+            {/* Quick suggestion cards */}
+            <div className="suggestion-cards">
+                {QUICK_SUGGESTIONS.map((d) => (
+                    <motion.button key={d}
+                        className={`suggestion-card ${value === d ? 'active' : ''}`}
+                        onClick={() => onChange(d)}
+                        whileTap={{ scale: 0.93 }}>
+                        <span className="suggestion-num">{d}</span>
+                        <span className="suggestion-unit">min</span>
+                    </motion.button>
                 ))}
-            </motion.div>
+            </div>
         </div>
-    );
-}
-
-function PickerItem({
-    label, index, y, centerOffset, isActive, onClick,
-}: {
-    label: string; index: number; y: ReturnType<typeof useSpring>;
-    centerOffset: number; isActive: boolean; onClick: () => void;
-}) {
-    const itemY = index * ITEM_HEIGHT;
-    const distance = useTransform(y, (val) => Math.abs(val + itemY - centerOffset));
-    const scale = useTransform(distance, [0, ITEM_HEIGHT, ITEM_HEIGHT * 2], [1, 0.85, 0.7]);
-    const opacity = useTransform(distance, [0, ITEM_HEIGHT, ITEM_HEIGHT * 2], [1, 0.5, 0.2]);
-
-    return (
-        <motion.div
-            className={`picker-item ${isActive ? 'active' : ''}`}
-            style={{ height: ITEM_HEIGHT, scale, opacity }}
-            onClick={onClick}
-        >
-            {label}
-        </motion.div>
     );
 }
 
 /* ─── Setup Screen ─── */
 export function SetupScreen() {
-    const { duration, selectedSound, showTimer, setDuration, setSelectedSound, setShowTimer, startSession } = useMeditationStore();
+    const { duration, selectedSound, showTimer, setDuration, setSelectedSound, setShowTimer, startCountdown } = useMeditationStore();
 
     const durationMinutes = Math.round(duration / 60);
 
@@ -115,7 +133,7 @@ export function SetupScreen() {
 
             <div className="setup-section">
                 <label className="setup-label">Duration</label>
-                <ScrollPicker value={durationMinutes} onChange={handleDurationChange} />
+                <ClockFacePicker value={durationMinutes} onChange={handleDurationChange} />
             </div>
 
             <div className="setup-section">
@@ -143,7 +161,7 @@ export function SetupScreen() {
                 </button>
             </div>
 
-            <button className="begin-button" onClick={startSession}>
+            <button className="begin-button" onClick={startCountdown}>
                 Begin
             </button>
         </div>

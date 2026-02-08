@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, animate } from 'framer-motion';
 import './StylesPage.css';
 
@@ -132,63 +132,89 @@ const QUICK_SUGGESTIONS = [5, 10, 15, 20, 30];
 
 function ClockFacePicker() {
     const [value, setValue] = useState(10);
-    const R = 110;
-    const DOT_ORBIT = 0.76;
+    const SIZE = 260;          // total SVG/container size
+    const CX = SIZE / 2;      // center x
+    const CY = SIZE / 2;      // center y
+    const DOT_R = 90;          // radius at which dots sit
+    const HAND_R = 58;         // hand length
+    const TICK_INNER = 100;    // tick mark inner radius
+    const TICK_OUTER = 108;    // tick mark outer radius
+    const DOT_SIZE = 28;       // dot button diameter
 
+    // Compute dot positions centered in SVG coordinate space
     const positions = DURATIONS.map((d, i) => {
-        const angle = (i / DURATIONS.length) * 360 - 90;
+        const angle = (i / DURATIONS.length) * 360 - 90; // start from top
         const rad = (angle * Math.PI) / 180;
-        return { d, x: R + R * DOT_ORBIT * Math.cos(rad), y: R + R * DOT_ORBIT * Math.sin(rad) };
+        return { d, angle, cx: CX + DOT_R * Math.cos(rad), cy: CY + DOT_R * Math.sin(rad) };
     });
 
-    // Animated hand endpoint
+    // Hand endpoint
     const activeIdx = DURATIONS.indexOf(value);
     const activeAngle = (activeIdx / DURATIONS.length) * 360 - 90;
     const handRad = (activeAngle * Math.PI) / 180;
-    const handX = R + R * 0.52 * Math.cos(handRad);
-    const handY = R + R * 0.52 * Math.sin(handRad);
+    const handX = CX + HAND_R * Math.cos(handRad);
+    const handY = CY + HAND_R * Math.sin(handRad);
 
     return (
         <div className="proto-frame proto-dark-center">
             <div className="picker-demo-wrap">
                 <p className="picker-demo-label">Set Duration</p>
 
-                {/* Clock */}
-                <div className="clock-face" style={{ width: R * 2, height: R * 2 }}>
-                    <svg width={R * 2} height={R * 2} className="clock-svg">
-                        <circle cx={R} cy={R} r={R - 4} className="clock-ring" />
-                        {/* Subtle hour marks */}
-                        {Array.from({ length: 12 }, (_, i) => {
-                            const a = (i * 30 - 90) * Math.PI / 180;
-                            const inner = R - 14;
-                            const outer = R - 6;
-                            return <line key={i}
-                                x1={R + inner * Math.cos(a)} y1={R + inner * Math.sin(a)}
-                                x2={R + outer * Math.cos(a)} y2={R + outer * Math.sin(a)}
-                                className="clock-tick" />;
-                        })}
-                        {/* Hand */}
-                        <motion.line x1={R} y1={R}
-                            animate={{ x2: handX, y2: handY }}
-                            transition={{ type: 'spring', stiffness: 180, damping: 18 }}
-                            className="clock-hand" />
-                        <circle cx={R} cy={R} r={5} fill="var(--accent)" />
-                        <circle cx={R} cy={R} r={2} fill="var(--bg-primary)" />
-                    </svg>
+                {/* Everything inside one SVG — no alignment issues */}
+                <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="clock-svg">
+                    {/* Outer ring */}
+                    <circle cx={CX} cy={CY} r={TICK_OUTER + 8} fill="none" stroke="rgba(200,149,108,0.06)" strokeWidth={1} />
 
-                    {/* Duration dots */}
-                    {positions.map((p) => (
-                        <motion.button key={p.d}
-                            className={`clock-dot ${value === p.d ? 'active' : ''}`}
-                            style={{ left: p.x, top: p.y }}
-                            onClick={() => setValue(p.d)}
-                            whileTap={{ scale: 0.85 }}
-                            animate={{ scale: value === p.d ? 1.25 : 1 }}
-                            transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
-                            {p.d}
-                        </motion.button>
-                    ))}
-                </div>
+                    {/* 12 subtle tick marks */}
+                    {Array.from({ length: 12 }, (_, i) => {
+                        const a = (i * 30 - 90) * Math.PI / 180;
+                        return <line key={i}
+                            x1={CX + TICK_INNER * Math.cos(a)} y1={CY + TICK_INNER * Math.sin(a)}
+                            x2={CX + TICK_OUTER * Math.cos(a)} y2={CY + TICK_OUTER * Math.sin(a)}
+                            stroke="rgba(200,149,108,0.1)" strokeWidth={1} />;
+                    })}
+
+                    {/* Animated hand */}
+                    <motion.line
+                        x1={CX} y1={CY}
+                        x2={handX} y2={handY}
+                        stroke="var(--accent)" strokeWidth={2} strokeLinecap="round"
+                        initial={false}
+                        animate={{ x2: handX, y2: handY }}
+                        transition={{ type: 'spring', stiffness: 180, damping: 18 }}
+                    />
+
+                    {/* Center hub */}
+                    <circle cx={CX} cy={CY} r={5} fill="var(--accent)" />
+                    <circle cx={CX} cy={CY} r={2} fill="var(--bg-primary)" />
+
+                    {/* Duration dot buttons — rendered as SVG groups */}
+                    {positions.map((p) => {
+                        const active = p.d === value;
+                        return (
+                            <g key={p.d} onClick={() => setValue(p.d)} style={{ cursor: 'pointer' }}>
+                                {/* Hit area */}
+                                <circle cx={p.cx} cy={p.cy} r={DOT_SIZE / 2 + 4} fill="transparent" />
+                                {/* Dot background */}
+                                <circle cx={p.cx} cy={p.cy} r={DOT_SIZE / 2}
+                                    fill={active ? 'var(--accent)' : 'var(--bg-secondary)'}
+                                    stroke={active ? 'var(--accent)' : 'rgba(200,149,108,0.12)'}
+                                    strokeWidth={1} />
+                                {active && (
+                                    <circle cx={p.cx} cy={p.cy} r={DOT_SIZE / 2 + 3}
+                                        fill="none" stroke="rgba(200,149,108,0.2)" strokeWidth={1} />
+                                )}
+                                {/* Label */}
+                                <text x={p.cx} y={p.cy} textAnchor="middle" dominantBaseline="central"
+                                    fill={active ? 'var(--bg-primary)' : 'var(--text-secondary)'}
+                                    fontSize={11} fontWeight={700} fontFamily="var(--font-mono)"
+                                    style={{ pointerEvents: 'none' }}>
+                                    {p.d}
+                                </text>
+                            </g>
+                        );
+                    })}
+                </svg>
 
                 {/* Selected value */}
                 <AnimatePresence mode="wait">
@@ -217,24 +243,28 @@ function ClockFacePicker() {
 }
 
 /* ═══════════════════════════════════════════
-   CANDLE MEDITATION TIMER
+   CANDLE MEDITATION TIMER — SVG + rAF
    ═══════════════════════════════════════════ */
 
-const CANDLE_DEMO_SECONDS = 40;
+const CANDLE_DEMO_SECONDS = 60;
+
+interface SmokeParticle {
+    id: number;
+    x: number;
+    y: number;
+    opacity: number;
+    size: number;
+    drift: number;
+    speed: number;
+}
 
 function CandleMeditationTimer() {
-    const [progress, setProgress] = useState(0); // 0 = start, 1 = done
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const rafRef = useRef<number>(0);
+    const startRef = useRef<number>(0);
+    const smokeRef = useRef<SmokeParticle[]>([]);
+    const smokeIdRef = useRef(0);
     const [breathing, setBreathing] = useState<'inhale' | 'exhale'>('inhale');
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setProgress((p) => {
-                const n = p + 1 / (CANDLE_DEMO_SECONDS * 60);
-                return n >= 1 ? 0 : n;
-            });
-        }, 1000 / 60);
-        return () => clearInterval(interval);
-    }, []);
 
     // Breathing cycle: 4s inhale, 4s exhale
     useEffect(() => {
@@ -244,80 +274,224 @@ function CandleMeditationTimer() {
         return () => clearInterval(cycle);
     }, []);
 
-    const remaining = 1 - progress;
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d')!;
+        const W = 300;
+        const H = 500;
+        canvas.width = W * 2;  // retina
+        canvas.height = H * 2;
+        ctx.scale(2, 2);
 
-    // Candle dimensions
-    const MAX_WAX_HEIGHT = 200;
-    const MIN_WAX_HEIGHT = 20;
-    const waxHeight = MIN_WAX_HEIGHT + remaining * (MAX_WAX_HEIGHT - MIN_WAX_HEIGHT);
+        // Candle geometry
+        const CANDLE_W = 36;
+        const CANDLE_MAX_H = 220;
+        const CANDLE_MIN_H = 30;
+        const CANDLE_X = W / 2 - CANDLE_W / 2;
+        const CANDLE_BOTTOM = H - 40;
+        const WICK_H = 10;
 
-    // Flame size breathes with inhale/exhale
-    const isInhale = breathing === 'inhale';
+        startRef.current = performance.now();
+
+        function getProgress(now: number) {
+            const elapsed = (now - startRef.current) / 1000;
+            return (elapsed % CANDLE_DEMO_SECONDS) / CANDLE_DEMO_SECONDS;
+        }
+
+        // Spawn smoke particle
+        function spawnSmoke(cx: number, tipY: number) {
+            smokeRef.current.push({
+                id: smokeIdRef.current++,
+                x: cx + (Math.random() - 0.5) * 4,
+                y: tipY - 5,
+                opacity: 0.15 + Math.random() * 0.1,
+                size: 1.5 + Math.random() * 2,
+                drift: (Math.random() - 0.5) * 0.3,
+                speed: 0.3 + Math.random() * 0.4,
+            });
+            // Cap at 15 particles
+            if (smokeRef.current.length > 15) smokeRef.current.shift();
+        }
+
+        function drawFrame(now: number) {
+            const progress = getProgress(now);
+            const remaining = 1 - progress;
+            ctx.clearRect(0, 0, W, H);
+
+            const candleH = CANDLE_MIN_H + remaining * (CANDLE_MAX_H - CANDLE_MIN_H);
+            const candleTop = CANDLE_BOTTOM - candleH;
+            const cx = W / 2;
+
+            // Breathing sine wave (continuous, not binary)
+            const breathTime = (now / 1000) % 8;
+            const breathPhase = Math.sin((breathTime / 8) * Math.PI * 2); // -1 to 1
+            const breathScale = 0.7 + (breathPhase + 1) * 0.3; // 0.7 to 1.3
+
+            // ── Ambient glow ──
+            const glowR = 80 + remaining * 60;
+            const glowGrad = ctx.createRadialGradient(cx, candleTop - 20, 0, cx, candleTop - 20, glowR);
+            glowGrad.addColorStop(0, `rgba(255, 170, 60, ${0.06 * remaining * breathScale})`);
+            glowGrad.addColorStop(0.5, `rgba(255, 140, 40, ${0.02 * remaining})`);
+            glowGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = glowGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            // ── Candle body ──
+            // Wax — subtle gradient, slightly rounded top
+            const waxGrad = ctx.createLinearGradient(cx, candleTop, cx, CANDLE_BOTTOM);
+            waxGrad.addColorStop(0, 'rgba(235, 220, 195, 0.10)');
+            waxGrad.addColorStop(0.3, 'rgba(225, 208, 180, 0.08)');
+            waxGrad.addColorStop(1, 'rgba(200, 180, 155, 0.05)');
+            ctx.fillStyle = waxGrad;
+
+            // Rounded top path (wax pool depression)
+            ctx.beginPath();
+            const poolDepth = 3;
+            ctx.moveTo(CANDLE_X, candleTop + 4);
+            // Concave top surface
+            ctx.quadraticCurveTo(cx, candleTop + poolDepth + 4, CANDLE_X + CANDLE_W, candleTop + 4);
+            // Right edge
+            ctx.lineTo(CANDLE_X + CANDLE_W, CANDLE_BOTTOM);
+            // Rounded bottom
+            ctx.quadraticCurveTo(CANDLE_X + CANDLE_W, CANDLE_BOTTOM + 3, CANDLE_X + CANDLE_W - 2, CANDLE_BOTTOM + 3);
+            ctx.lineTo(CANDLE_X + 2, CANDLE_BOTTOM + 3);
+            ctx.quadraticCurveTo(CANDLE_X, CANDLE_BOTTOM + 3, CANDLE_X, CANDLE_BOTTOM);
+            ctx.closePath();
+            ctx.fill();
+
+            // Wax edge highlight
+            ctx.strokeStyle = 'rgba(200, 180, 155, 0.06)';
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+
+            // ── Wax pool at top ──
+            ctx.beginPath();
+            ctx.ellipse(cx, candleTop + 4, CANDLE_W / 2 - 1, 3, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 220, 170, 0.04)';
+            ctx.fill();
+
+            // ── Wick ──
+            const wickTop = candleTop + 2 - WICK_H;
+            ctx.beginPath();
+            ctx.moveTo(cx - 0.7, candleTop + 4);
+            ctx.lineTo(cx - 0.3, wickTop);
+            ctx.lineTo(cx + 0.3, wickTop);
+            ctx.lineTo(cx + 0.7, candleTop + 4);
+            ctx.fillStyle = 'rgba(80, 60, 40, 0.6)';
+            ctx.fill();
+
+            // Wick ember glow
+            ctx.beginPath();
+            ctx.arc(cx, wickTop + 1, 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 200, 100, ${0.4 * remaining})`;
+            ctx.fill();
+
+            // ── Flame ──
+            const flameTipY = wickTop;
+            const flameBaseY = wickTop + 2;
+            const flameH = (25 + remaining * 20) * breathScale;
+            const flameW = (6 + remaining * 3) * (1.1 - breathScale * 0.15);
+
+            // Subtle random jitter
+            const jitterX = Math.sin(now * 0.005) * 0.8 + Math.sin(now * 0.013) * 0.4;
+            const jitterY = Math.sin(now * 0.007) * 0.3;
+            const fx = cx + jitterX;
+            const fy = flameBaseY + jitterY;
+
+            // Layer 3: Outer halo (very soft)
+            const outerGrad = ctx.createRadialGradient(fx, fy - flameH * 0.3, 0, fx, fy - flameH * 0.3, flameH * 0.7);
+            outerGrad.addColorStop(0, `rgba(255, 100, 20, ${0.08 * remaining})`);
+            outerGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = outerGrad;
+            ctx.beginPath();
+            ctx.ellipse(fx, fy - flameH * 0.3, flameW * 2, flameH * 0.7, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Layer 2: Main flame body (orange teardrop)
+            ctx.beginPath();
+            ctx.moveTo(fx, fy - flameH);  // tip
+            ctx.bezierCurveTo(
+                fx - flameW * 0.4, fy - flameH * 0.6,  // left control
+                fx - flameW, fy - flameH * 0.15,         // left bulge
+                fx, fy                                     // base
+            );
+            ctx.bezierCurveTo(
+                fx + flameW, fy - flameH * 0.15,          // right bulge
+                fx + flameW * 0.4, fy - flameH * 0.6,    // right control
+                fx, fy - flameH                            // tip
+            );
+            const bodyGrad = ctx.createLinearGradient(fx, fy, fx, fy - flameH);
+            bodyGrad.addColorStop(0, `rgba(255, 140, 30, ${0.55 * remaining})`);
+            bodyGrad.addColorStop(0.4, `rgba(255, 180, 60, ${0.4 * remaining})`);
+            bodyGrad.addColorStop(0.8, `rgba(255, 210, 100, ${0.15 * remaining})`);
+            bodyGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = bodyGrad;
+            ctx.fill();
+
+            // Layer 1: Inner core (bright yellow-white)
+            const coreH = flameH * 0.5;
+            const coreW = flameW * 0.45;
+            ctx.beginPath();
+            ctx.moveTo(fx, fy - coreH);
+            ctx.bezierCurveTo(
+                fx - coreW * 0.3, fy - coreH * 0.5,
+                fx - coreW, fy - coreH * 0.1,
+                fx, fy
+            );
+            ctx.bezierCurveTo(
+                fx + coreW, fy - coreH * 0.1,
+                fx + coreW * 0.3, fy - coreH * 0.5,
+                fx, fy - coreH
+            );
+            const coreGrad = ctx.createLinearGradient(fx, fy, fx, fy - coreH);
+            coreGrad.addColorStop(0, `rgba(255, 255, 220, ${0.7 * remaining})`);
+            coreGrad.addColorStop(0.5, `rgba(255, 240, 180, ${0.4 * remaining})`);
+            coreGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = coreGrad;
+            ctx.fill();
+
+            // ── Smoke wisps ──
+            if (Math.random() < 0.08) spawnSmoke(cx, flameTipY - flameH);
+
+            smokeRef.current = smokeRef.current.filter(p => p.opacity > 0.01);
+            for (const p of smokeRef.current) {
+                p.y -= p.speed;
+                p.x += p.drift + Math.sin(now * 0.003 + p.id) * 0.15;
+                p.opacity *= 0.985;
+                p.size += 0.02;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(180, 170, 160, ${p.opacity * remaining})`;
+                ctx.fill();
+            }
+
+            // ── Base / holder ──
+            ctx.beginPath();
+            ctx.ellipse(cx, CANDLE_BOTTOM + 3, CANDLE_W / 2 + 6, 3, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(200, 180, 155, 0.04)';
+            ctx.fill();
+
+            rafRef.current = requestAnimationFrame(drawFrame);
+        }
+
+        rafRef.current = requestAnimationFrame(drawFrame);
+        return () => cancelAnimationFrame(rafRef.current);
+    }, []);
 
     return (
-        <div className="proto-frame proto-dark-center">
-            <div className="candle-timer-scene">
-                {/* Ambient glow — tied to remaining wax */}
-                <motion.div className="candle-ambient-glow"
-                    animate={{
-                        opacity: remaining * 0.2 + 0.02,
-                        scale: [0.97, 1.03, 0.97],
-                    }}
-                    transition={{ scale: { duration: 4, repeat: Infinity, ease: 'easeInOut' } }}
-                />
-
-                {/* Flame group */}
-                <div className="candle-flame-group" style={{ bottom: waxHeight + 22 }}>
-                    {/* Outer flame — breathing */}
-                    <motion.div className="candle-flame-outer"
-                        animate={{
-                            scaleY: isInhale ? 1.25 : 0.75,
-                            scaleX: isInhale ? 0.9 : 1.1,
-                            opacity: isInhale ? remaining * 0.7 + 0.15 : remaining * 0.4 + 0.1,
-                        }}
-                        transition={{ duration: 3.5, ease: 'easeInOut' }}
-                    />
-                    {/* Inner flame — breathing inverse accent */}
-                    <motion.div className="candle-flame-inner"
-                        animate={{
-                            scaleY: isInhale ? 1.3 : 0.65,
-                            scaleX: isInhale ? 0.85 : 1.15,
-                            opacity: isInhale ? remaining * 0.8 + 0.2 : remaining * 0.5 + 0.15,
-                        }}
-                        transition={{ duration: 3.5, ease: 'easeInOut' }}
-                    />
-                    {/* Flame flicker — subtle random movement */}
-                    <motion.div className="candle-flame-core"
-                        animate={{
-                            x: [-0.5, 0.8, -0.3, 0.5, -0.5],
-                            scaleY: [1, 1.04, 0.97, 1.02, 1],
-                        }}
-                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                    />
-                </div>
-
-                {/* Wick */}
-                <div className="candle-wick-line" style={{ bottom: waxHeight + 14 }} />
-
-                {/* Wax body — height decreases very gradually */}
-                <motion.div className="candle-wax-body"
-                    animate={{ height: waxHeight }}
-                    transition={{ duration: 0.5, ease: 'linear' }}
-                />
-
-                {/* Wax drip texture — subtle surface */}
-                <div className="candle-wax-pool" />
-
-                {/* Breathing guide text */}
-                <motion.p className="candle-breath-guide"
-                    key={breathing}
+        <div className="proto-frame proto-dark-center candle-bg">
+            <canvas ref={canvasRef} className="candle-canvas" />
+            <AnimatePresence mode="wait">
+                <motion.p key={breathing} className="candle-breath-guide"
                     initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 0.4, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 1 }}>
-                    {isInhale ? 'breathe in' : 'breathe out'}
+                    animate={{ opacity: 0.35, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 1.2 }}>
+                    {breathing === 'inhale' ? 'breathe in' : 'breathe out'}
                 </motion.p>
-            </div>
+            </AnimatePresence>
         </div>
     );
 }
