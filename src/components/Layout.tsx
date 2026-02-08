@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Link, Outlet } from 'react-router-dom';
 import { useAppStore } from '../stores/appStore';
 import { supabase } from '../services/supabase';
 import './Layout.css';
@@ -6,17 +6,10 @@ import './Layout.css';
 const NAV_ITEMS = [
     { to: '/', icon: '◉', label: 'Dashboard' },
     { to: '/meditation', icon: '◎', label: 'Meditation' },
-    // Future modules:
-    // { to: '/habits', icon: '✓', label: 'Habits' },
-    // { to: '/productivity', icon: '⏱', label: 'Productivity' },
-    // { to: '/health', icon: '♥', label: 'Health' },
-    // { to: '/journal', icon: '✎', label: 'Journal' },
-    // { to: '/mood', icon: '☺', label: 'Mood' },
-    // { to: '/goals', icon: '⚑', label: 'Goals' },
 ];
 
 export function Layout() {
-    const { sidebarOpen, toggleSidebar, profile } = useAppStore();
+    const { sidebarOpen, toggleSidebar, user, profile } = useAppStore();
 
     async function handleSignOut() {
         await supabase.auth.signOut();
@@ -46,11 +39,17 @@ export function Layout() {
                 </nav>
 
                 <div className="sidebar-footer">
-                    <div className="user-info">
-                        <span className="user-name">{profile?.display_name || 'User'}</span>
-                        <span className="user-tier">{profile?.role === 'admin' ? 'Admin' : profile?.subscription_tier}</span>
-                    </div>
-                    <button className="sign-out-btn" onClick={handleSignOut}>Sign Out</button>
+                    {user ? (
+                        <>
+                            <div className="user-info">
+                                <span className="user-name">{profile?.display_name || user.email}</span>
+                                <span className="user-tier">{profile?.role === 'admin' ? 'Admin' : profile?.subscription_tier}</span>
+                            </div>
+                            <button className="sign-out-btn" onClick={handleSignOut}>Sign Out</button>
+                        </>
+                    ) : (
+                        <Link to="/login" className="sign-in-link">Sign In</Link>
+                    )}
                 </div>
             </aside>
 

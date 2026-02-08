@@ -150,6 +150,23 @@
     color: var(--error);
 }
 
+.sign-in-link {
+    display: block;
+    padding: var(--space-3) var(--space-4);
+    background: var(--accent);
+    color: var(--bg-primary);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--text-sm);
+    border-radius: var(--radius-md);
+    text-align: center;
+    transition: background var(--transition-fast);
+}
+
+.sign-in-link:hover {
+    background: var(--accent-hover);
+    color: var(--bg-primary);
+}
+
 /* Main Content */
 .main-content {
     flex: 1;

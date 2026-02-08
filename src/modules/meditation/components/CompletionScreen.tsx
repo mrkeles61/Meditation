@@ -1,6 +1,7 @@
 import { useMeditationStore } from '../store';
 import { supabase } from '../../../services/supabase';
 import { useAppStore } from '../../../stores/appStore';
+import { Link } from 'react-router-dom';
 import './CompletionScreen.css';
 
 export function CompletionScreen() {
@@ -38,8 +39,13 @@ export function CompletionScreen() {
                         ? 'Well done. Every moment of stillness counts.'
                         : 'Even a short pause makes a difference.'}
                 </p>
+                {!user && (
+                    <p className="completion-hint">
+                        <Link to="/login">Sign in</Link> to save your sessions
+                    </p>
+                )}
                 <button className="completion-button" onClick={saveAndReturn}>
-                    Back to Dashboard
+                    {user ? 'Save & Continue' : 'Back to Dashboard'}
                 </button>
             </div>
         </div>

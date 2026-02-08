@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../services/supabase';
 import './LoginPage.css';
 
@@ -7,19 +8,32 @@ export function LoginPage() {
     const [password, setPassword] = useState('');
     const [isSignUp, setIsSignUp] = useState(false);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
         setError('');
+        setSuccess('');
         setLoading(true);
 
-        const { error: authError } = isSignUp
-            ? await supabase.auth.signUp({ email, password })
-            : await supabase.auth.signInWithPassword({ email, password });
-
-        if (authError) {
-            setError(authError.message);
+        if (isSignUp) {
+            const { error: authError } = await supabase.auth.signUp({ email, password });
+            if (authError) {
+                setError(authError.message);
+            } else {
+                setSuccess('Account created! Check your email to confirm, then sign in.');
+                setIsSignUp(false);
+                setPassword('');
+            }
+        } else {
+            const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+            if (authError) {
+                setError(authError.message);
+            } else {
+                navigate('/');
+            }
         }
         setLoading(false);
     }
@@ -27,9 +41,17 @@ export function LoginPage() {
     return (
         <div className="login-page">
             <div className="login-card">
+                <button className="back-link" onClick={() => navigate('/')}>← Back to app</button>
+
                 <div className="login-header">
-                    <h1 className="login-title">Ultraviolet Perigee</h1>
-                    <p className="login-subtitle">Your wellness journey begins here</p>
+                    <h1 className="login-title">
+                        {isSignUp ? 'Create Account' : 'Welcome Back'}
+                    </h1>
+                    <p className="login-subtitle">
+                        {isSignUp
+                            ? 'Start tracking your wellness journey'
+                            : 'Sign in to save your progress'}
+                    </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="login-form">
@@ -61,6 +83,7 @@ export function LoginPage() {
                     </div>
 
                     {error && <p className="login-error">{error}</p>}
+                    {success && <p className="login-success">{success}</p>}
 
                     <button type="submit" className="login-button" disabled={loading}>
                         {loading ? 'Please wait...' : isSignUp ? 'Create Account' : 'Sign In'}
@@ -72,6 +95,7 @@ export function LoginPage() {
                     onClick={() => {
                         setIsSignUp(!isSignUp);
                         setError('');
+                        setSuccess('');
                     }}
                 >
                     {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}

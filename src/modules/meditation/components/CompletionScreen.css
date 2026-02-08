@@ -49,3 +49,12 @@
 .completion-button:hover {
     background: var(--accent-hover);
 }
+
+.completion-hint {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
+
+.completion-hint a {
+    color: var(--accent);
+}
