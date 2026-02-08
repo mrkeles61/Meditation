@@ -1,0 +1,76 @@
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+.welcome-card {
+    padding: var(--space-8);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.welcome-title {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-2);
+}
+
+.welcome-subtitle {
+    color: var(--text-secondary);
+    font-size: var(--text-lg);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-5);
+}
+
+.module-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-base);
+}
+
+.module-card:not(.locked):hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.module-card.locked {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.module-icon {
+    font-size: var(--text-3xl);
+}
+
+.module-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+}
+
+.module-desc {
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+}
+
+.module-action {
+    margin-top: auto;
+    color: var(--accent);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.meditation-card {
+    border-color: var(--accent-muted);
+}

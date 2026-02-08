@@ -1,0 +1,32 @@
+.breathing-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 280px;
+    height: 280px;
+}
+
+.breathing-glow {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+            var(--glow) 0%,
+            transparent 70%);
+    will-change: transform, opacity;
+}
+
+.breathing-circle {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%,
+            var(--accent-hover) 0%,
+            var(--accent) 50%,
+            rgba(200, 149, 108, 0.4) 100%);
+    box-shadow:
+        0 0 40px var(--glow),
+        0 0 80px rgba(200, 149, 108, 0.1);
+}
