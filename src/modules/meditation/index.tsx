@@ -5,45 +5,40 @@ import { CountdownScreen } from './components/CountdownScreen';
 import { SessionScreen } from './components/SessionScreen';
 import { CompletionScreen } from './components/CompletionScreen';
 
+const overlay: React.CSSProperties = {
+    position: 'fixed', inset: 0, zIndex: 200,
+    background: 'var(--bg-primary)',
+};
+
 export function MeditationPage() {
     const { phase } = useMeditationStore();
 
     return (
-        <AnimatePresence mode="wait">
-            {phase === 'setup' && (
-                <motion.div key="setup"
-                    initial={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 1.5 }}>
-                    <SetupScreen />
-                </motion.div>
-            )}
-            {phase === 'countdown' && (
-                <motion.div key="countdown"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.8 }}>
-                    <CountdownScreen />
-                </motion.div>
-            )}
-            {phase === 'session' && (
-                <motion.div key="session"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1.5 }}
-                    style={{ height: '100%' }}>
-                    <SessionScreen />
-                </motion.div>
-            )}
-            {phase === 'completion' && (
-                <motion.div key="completion"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}>
-                    <CompletionScreen />
-                </motion.div>
-            )}
-        </AnimatePresence>
+        <>
+            {/* Normal in-flow screens */}
+            {phase === 'setup' && <SetupScreen />}
+            {phase === 'completion' && <CompletionScreen />}
+
+            {/* Fullscreen overlays — render immediately, cover everything */}
+            <AnimatePresence>
+                {phase === 'countdown' && (
+                    <motion.div key="countdown" style={overlay}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}>
+                        <CountdownScreen />
+                    </motion.div>
+                )}
+                {phase === 'session' && (
+                    <motion.div key="session" style={overlay}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1 }}>
+                        <SessionScreen />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </>
     );
 }

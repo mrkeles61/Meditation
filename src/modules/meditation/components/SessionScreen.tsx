@@ -167,13 +167,16 @@ export function SessionScreen() {
             // Breathing sine wave
             const cyclePos = ((now / 1000) % BREATH_CYCLE) / BREATH_CYCLE;
             const breathPhase = Math.sin(cyclePos * Math.PI * 2);
-            const breathScale = 1 + breathPhase * 0.25;
+            const breathScale = 1 + breathPhase * 0.15;
 
-            // Ambient glow
-            const glowR = 100 + rem * 80;
+            // Soft remaining — stays near 1.0 for most of the session, drops at end
+            const softRem = Math.pow(rem, 0.3);
+
+            // Ambient glow — stays bright throughout
+            const glowR = 120 + softRem * 60;
             const glowGrad = ctx.createRadialGradient(cx, candleTop - 30, 0, cx, candleTop - 30, glowR);
-            glowGrad.addColorStop(0, `rgba(255, 170, 60, ${0.08 * rem * breathScale})`);
-            glowGrad.addColorStop(0.4, `rgba(255, 140, 40, ${0.03 * rem})`);
+            glowGrad.addColorStop(0, `rgba(255, 170, 60, ${0.15 * softRem * breathScale})`);
+            glowGrad.addColorStop(0.4, `rgba(255, 140, 40, ${0.06 * softRem})`);
             glowGrad.addColorStop(1, 'transparent');
             ctx.fillStyle = glowGrad;
             ctx.fillRect(0, 0, W, H);
@@ -219,21 +222,22 @@ export function SessionScreen() {
             // Wick ember
             ctx.beginPath();
             ctx.arc(cx, wickTop + 1.5, 2, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 200, 100, ${0.5 * rem})`;
+            ctx.fillStyle = `rgba(255, 200, 100, ${0.6 * softRem})`;
             ctx.fill();
 
             // Flame
-            const flameH = (35 + rem * 25) * breathScale;
-            const flameW = (9 + rem * 4) * (1.15 - breathScale * 0.12);
+            const flameH = (35 + softRem * 25) * breathScale;
+            const flameW = (10 + softRem * 4) * (1.08 - breathScale * 0.06);
 
-            const jitterX = Math.sin(now * 0.004) * 1.2 + Math.sin(now * 0.011) * 0.6 + Math.sin(now * 0.023) * 0.3;
-            const jitterY = Math.sin(now * 0.006) * 0.5;
+            // Gentle sway — very slow, small amplitude
+            const jitterX = Math.sin(now * 0.0015) * 0.6 + Math.sin(now * 0.004) * 0.3;
+            const jitterY = Math.sin(now * 0.002) * 0.3;
             const fx = cx + jitterX;
             const fy = wickTop + 2 + jitterY;
 
             // Outer halo
             const outerGrad = ctx.createRadialGradient(fx, fy - flameH * 0.35, 0, fx, fy - flameH * 0.35, flameH * 0.8);
-            outerGrad.addColorStop(0, `rgba(255, 100, 20, ${0.1 * rem})`);
+            outerGrad.addColorStop(0, `rgba(255, 100, 20, ${0.18 * softRem})`);
             outerGrad.addColorStop(1, 'transparent');
             ctx.fillStyle = outerGrad;
             ctx.beginPath();
@@ -246,9 +250,9 @@ export function SessionScreen() {
             ctx.bezierCurveTo(fx - flameW * 0.5, fy - flameH * 0.55, fx - flameW, fy - flameH * 0.15, fx, fy);
             ctx.bezierCurveTo(fx + flameW, fy - flameH * 0.15, fx + flameW * 0.5, fy - flameH * 0.55, fx, fy - flameH);
             const bodyGrad = ctx.createLinearGradient(fx, fy, fx, fy - flameH);
-            bodyGrad.addColorStop(0, `rgba(255, 130, 20, ${0.65 * rem})`);
-            bodyGrad.addColorStop(0.3, `rgba(255, 180, 50, ${0.5 * rem})`);
-            bodyGrad.addColorStop(0.7, `rgba(255, 210, 90, ${0.2 * rem})`);
+            bodyGrad.addColorStop(0, `rgba(255, 130, 20, ${0.85 * softRem})`);
+            bodyGrad.addColorStop(0.3, `rgba(255, 180, 50, ${0.7 * softRem})`);
+            bodyGrad.addColorStop(0.7, `rgba(255, 210, 90, ${0.35 * softRem})`);
             bodyGrad.addColorStop(1, 'transparent');
             ctx.fillStyle = bodyGrad;
             ctx.fill();
@@ -261,8 +265,8 @@ export function SessionScreen() {
             ctx.bezierCurveTo(fx - coreW * 0.3, fy - coreH * 0.45, fx - coreW, fy - coreH * 0.08, fx, fy);
             ctx.bezierCurveTo(fx + coreW, fy - coreH * 0.08, fx + coreW * 0.3, fy - coreH * 0.45, fx, fy - coreH);
             const coreGrad = ctx.createLinearGradient(fx, fy, fx, fy - coreH);
-            coreGrad.addColorStop(0, `rgba(255, 255, 220, ${0.8 * rem})`);
-            coreGrad.addColorStop(0.4, `rgba(255, 245, 190, ${0.5 * rem})`);
+            coreGrad.addColorStop(0, `rgba(255, 255, 220, ${0.95 * softRem})`);
+            coreGrad.addColorStop(0.4, `rgba(255, 245, 190, ${0.7 * softRem})`);
             coreGrad.addColorStop(1, 'transparent');
             ctx.fillStyle = coreGrad;
             ctx.fill();
@@ -277,7 +281,7 @@ export function SessionScreen() {
                 p.size += 0.025;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(180, 170, 160, ${p.opacity * rem})`;
+                ctx.fillStyle = `rgba(180, 170, 160, ${p.opacity * softRem})`;
                 ctx.fill();
             }
 
