@@ -184,8 +184,9 @@
 .mobile-header {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
+    justify-content: center;
     padding: var(--space-4) var(--space-5);
+    padding-top: calc(var(--space-4) + env(safe-area-inset-top, 0px));
     border-bottom: 1px solid var(--border);
     background: var(--bg-secondary);
 }
@@ -194,11 +195,6 @@
     .mobile-header {
         display: none;
     }
-}
-
-.menu-btn {
-    font-size: var(--text-xl);
-    color: var(--text-primary);
 }
 
 .mobile-logo {
@@ -211,7 +207,64 @@
 .content-area {
     flex: 1;
     padding: var(--space-6);
+    padding-bottom: calc(var(--space-6) + 72px);
     max-width: var(--max-width-content);
     width: 100%;
     margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .content-area {
+        padding-bottom: var(--space-6);
+    }
+}
+
+/* ─── Bottom Tab Bar (mobile only) ─── */
+.bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (min-width: 768px) {
+    .bottom-nav {
+        display: none;
+    }
+}
+
+.bottom-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: var(--space-2) 0;
+    color: var(--text-muted);
+    font-size: var(--text-xs);
+    transition: color var(--transition-fast);
+    text-decoration: none;
+    min-height: 44px;
+    justify-content: center;
+}
+
+.bottom-tab.active {
+    color: var(--accent);
+}
+
+.bottom-tab-icon {
+    font-size: var(--text-lg);
+    line-height: 1;
+}
+
+.bottom-tab-label {
+    font-size: 10px;
+    font-weight: var(--font-weight-medium);
 }

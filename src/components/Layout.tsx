@@ -1,4 +1,4 @@
-import { NavLink, Link, Outlet } from 'react-router-dom';
+import { NavLink, Link, Outlet, useLocation } from 'react-router-dom';
 import { useAppStore } from '../stores/appStore';
 import { supabase } from '../services/supabase';
 import './Layout.css';
@@ -9,8 +9,17 @@ const NAV_ITEMS = [
     { to: '/styles', icon: '◈', label: 'Styles' },
 ];
 
+const BOTTOM_TABS = [
+    { to: '/', icon: '◉', label: 'Home' },
+    { to: '/meditation', icon: '◎', label: 'Meditate' },
+];
+
 export function Layout() {
     const { sidebarOpen, toggleSidebar, user, profile } = useAppStore();
+    const location = useLocation();
+
+    // Hide bottom nav during fullscreen meditation phases
+    const isMeditationActive = location.pathname === '/meditation';
 
     async function handleSignOut() {
         await supabase.auth.signOut();
@@ -58,13 +67,29 @@ export function Layout() {
 
             <main className="main-content">
                 <header className="mobile-header">
-                    <button className="menu-btn" onClick={toggleSidebar}>☰</button>
                     <span className="mobile-logo">Ultraviolet Perigee</span>
                 </header>
                 <div className="content-area">
                     <Outlet />
                 </div>
             </main>
+
+            {/* Mobile bottom tab bar */}
+            {!isMeditationActive && (
+                <nav className="bottom-nav">
+                    {BOTTOM_TABS.map((tab) => (
+                        <NavLink
+                            key={tab.to}
+                            to={tab.to}
+                            end={tab.to === '/'}
+                            className={({ isActive }) => `bottom-tab ${isActive ? 'active' : ''}`}
+                        >
+                            <span className="bottom-tab-icon">{tab.icon}</span>
+                            <span className="bottom-tab-label">{tab.label}</span>
+                        </NavLink>
+                    ))}
+                </nav>
+            )}
         </div>
     );
 }
