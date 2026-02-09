@@ -43,6 +43,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                     role: data.role,
                     subscription_tier: data.subscription_tier,
                     display_name: data.display_name,
+                    avatar_url: data.avatar_url || null,
                 });
             }
             setLoading(false);

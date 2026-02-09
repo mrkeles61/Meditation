@@ -6,12 +6,14 @@ import './Layout.css';
 const NAV_ITEMS = [
     { to: '/', icon: '◉', label: 'Dashboard' },
     { to: '/meditation', icon: '◎', label: 'Meditation' },
+    { to: '/profile', icon: '◐', label: 'Profile' },
     { to: '/styles', icon: '◈', label: 'Styles' },
 ];
 
 const BOTTOM_TABS = [
     { to: '/', icon: '◉', label: 'Home' },
     { to: '/meditation', icon: '◎', label: 'Meditate' },
+    { to: '/profile', icon: '◐', label: 'Profile' },
 ];
 
 export function Layout() {

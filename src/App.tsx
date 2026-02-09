@@ -5,6 +5,7 @@ import { LoginPage } from './modules/auth/LoginPage';
 import { Dashboard } from './modules/dashboard/index';
 import { MeditationPage } from './modules/meditation/index';
 import { StylesPage } from './modules/styles/StylesPage';
+import { ProfilePage } from './modules/profile/index';
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="meditation" element={<MeditationPage />} />
             <Route path="styles" element={<StylesPage />} />
+            <Route path="profile" element={<ProfilePage />} />
           </Route>
           <Route path="/login" element={<LoginPage />} />
         </Routes>

@@ -6,6 +6,7 @@ interface Profile {
     role: 'user' | 'admin';
     subscription_tier: 'free' | 'premium';
     display_name: string | null;
+    avatar_url: string | null;
 }
 
 interface AppState {
