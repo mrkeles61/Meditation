@@ -7,6 +7,9 @@ interface Profile {
     subscription_tier: 'free' | 'premium';
     display_name: string | null;
     avatar_url: string | null;
+    height_cm: number | null;
+    goal_weight_kg: number | null;
+    meditation_goal_minutes: number;
 }
 
 interface AppState {

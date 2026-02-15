@@ -75,11 +75,23 @@
     gap: var(--space-4);
 }
 
+.section-title-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
 .section-title {
     font-size: var(--text-lg);
     font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
     margin: 0;
+}
+
+.weight-today-date {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
 }
 
 /* Weight Input */
@@ -129,47 +141,173 @@
     opacity: 0.5;
 }
 
-/* Average Day Picker */
-.weight-avg-picker {
+/* Log Feedback */
+.wt-log-feedback {
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+    text-align: center;
+}
+
+.wt-log-feedback.feedback-down {
+    background: rgba(76, 175, 80, 0.08);
+    color: rgba(76, 175, 80, 0.8);
+    border: 1px solid rgba(76, 175, 80, 0.15);
+}
+
+.wt-log-feedback.feedback-up {
+    background: rgba(200, 149, 108, 0.08);
+    color: var(--accent);
+    border: 1px solid rgba(200, 149, 108, 0.15);
+}
+
+.wt-log-feedback.feedback-same {
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+
+/* Body Metrics Row (Height, Goal, BMI) */
+.wt-body-row {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+.wt-body-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.wt-body-label {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.wt-body-input-wrap {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-1);
 }
 
-.avg-label {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-}
-
-.avg-select {
-    padding: var(--space-2) var(--space-3);
+.wt-body-input {
+    width: 72px;
+    padding: var(--space-2);
     background: var(--bg-elevated);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     color: var(--text-primary);
     font-size: 16px;
-    font-family: var(--font-primary);
+    font-family: var(--font-mono);
     outline: none;
+    text-align: center;
 }
 
-/* Weight Chart */
-.weight-chart-container {
-    height: 220px;
+.wt-body-input:focus {
+    border-color: var(--accent);
+}
+
+.wt-body-unit {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+/* BMI Badge */
+.wt-bmi-badge {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+    font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
+}
+
+.wt-bmi-badge.bmi-under {
+    background: rgba(100, 181, 246, 0.12);
+    color: rgba(100, 181, 246, 0.9);
+}
+
+.wt-bmi-badge.bmi-normal {
+    background: rgba(76, 175, 80, 0.12);
+    color: rgba(76, 175, 80, 0.9);
+}
+
+.wt-bmi-badge.bmi-over {
+    background: rgba(255, 183, 77, 0.12);
+    color: rgba(255, 183, 77, 0.9);
+}
+
+.wt-bmi-badge.bmi-obese {
+    background: rgba(239, 83, 80, 0.12);
+    color: rgba(239, 83, 80, 0.9);
+}
+
+/* Weight Chart (SVG) */
+.weight-tracker-chart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.wt-timeframe-row {
+    display: flex;
+    gap: var(--space-1);
+    align-self: flex-end;
+}
+
+.wt-tf-pill {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-family: var(--font-mono);
+    font-weight: var(--font-weight-semibold);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.wt-tf-pill:hover {
+    border-color: var(--accent);
+    color: var(--text-secondary);
+}
+
+.wt-tf-pill.active {
+    background: rgba(200, 149, 108, 0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.wt-chart-wrap {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: var(--space-4);
+    padding: var(--space-2);
+    overflow-x: auto;
 }
 
-.weight-chart-loading,
-.weight-chart-empty {
+.wt-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.wt-loading,
+.wt-empty {
     text-align: center;
     color: var(--text-muted);
     padding: var(--space-8) 0;
     font-size: var(--text-sm);
 }
 
-.weight-stats-row {
+/* Stats Row */
+.wt-stats-row {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -180,26 +318,43 @@
     border-radius: var(--radius-lg);
 }
 
-.weight-stat {
+.wt-stat {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2px;
 }
 
-.weight-stat-value {
+.wt-stat-value {
     font-size: var(--text-lg);
     font-weight: var(--font-weight-bold);
     color: var(--text-primary);
+    font-family: var(--font-mono);
 }
 
-.weight-stat-value.up {
-    color: var(--error);
+.wt-stat-value.wt-up {
+    color: rgba(239, 83, 80, 0.8);
 }
 
-.weight-stat-value.down {
-    color: var(--success);
+.wt-stat-value.wt-down {
+    color: rgba(76, 175, 80, 0.8);
 }
+
+.wt-stat-value.goal-reached {
+    color: rgba(76, 175, 80, 0.9);
+}
+
+.wt-stat-label {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+.wt-stat-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--border);
+}
+
 
 .weight-stat-label {
     font-size: var(--text-xs);
@@ -212,15 +367,63 @@
     background: var(--border);
 }
 
-/* ─── Meditation Heatmap ─── */
+/* ─── GitHub-Style Meditation Heatmap ─── */
 
-.meditation-heatmap {
+.github-meditation-heatmap {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
 }
 
-.heatmap-stats {
+.ghm-top-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+.ghm-year-switcher {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+}
+
+.ghm-year-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    min-width: 48px;
+    text-align: center;
+}
+
+.ghm-year-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-md);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: var(--text-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.ghm-year-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.ghm-year-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.ghm-stats {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -229,130 +432,157 @@
     background: var(--bg-secondary);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
+    flex-wrap: wrap;
 }
 
-.heatmap-stat {
+.ghm-stat {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2px;
 }
 
-.heatmap-stat-value {
+.ghm-stat-value {
     font-size: var(--text-lg);
     font-weight: var(--font-weight-bold);
     color: var(--text-primary);
 }
 
-.heatmap-stat-label {
+.ghm-stat-label {
     font-size: var(--text-xs);
     color: var(--text-secondary);
 }
 
-.heatmap-stat-divider {
+.ghm-stat-divider {
     width: 1px;
     height: 24px;
     background: var(--border);
 }
 
-/* Months grid */
-.heatmap-months {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-4);
+/* Goal banner */
+.ghm-goal-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: rgba(200, 149, 108, 0.06);
+    border: 1px solid rgba(200, 149, 108, 0.12);
+    border-radius: var(--radius-md);
 }
 
-@media (max-width: 600px) {
-    .heatmap-months {
-        grid-template-columns: 1fr;
-    }
+.ghm-goal-icon {
+    font-size: var(--text-base);
 }
 
-.heatmap-month {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-3);
-}
-
-.heatmap-month-label {
-    display: block;
-    font-size: var(--text-xs);
-    font-weight: var(--font-weight-semibold);
+.ghm-goal-text {
+    font-size: var(--text-sm);
     color: var(--text-secondary);
-    margin-bottom: var(--space-2);
-    text-align: center;
 }
 
-.heatmap-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
-    text-align: center;
-}
-
-.heatmap-dow {
-    font-size: 9px;
-    color: var(--text-muted);
-    padding: 2px 0;
-}
-
-.heatmap-cell {
-    font-size: 10px;
-    line-height: 1;
-    padding: 4px 0;
-    border-radius: 3px;
-    color: var(--text-muted);
-    cursor: default;
-    transition: background var(--transition-fast);
-}
-
-.heatmap-cell.empty {
-    visibility: hidden;
-}
-
-.heatmap-cell.active {
-    background: var(--accent-muted);
+.ghm-goal-text strong {
     color: var(--accent);
+    font-weight: var(--font-weight-semibold);
+}
+
+.ghm-goal-input {
+    width: 48px;
+    padding: var(--space-1) var(--space-2);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--accent);
+    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+    font-weight: var(--font-weight-bold);
+    text-align: center;
+    outline: none;
+}
+
+.ghm-goal-input:focus {
+    border-color: var(--accent);
+}
+
+/* Chart container */
+.ghm-chart-wrap {
+    overflow-x: auto;
+    padding: var(--space-2) 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+.ghm-svg {
+    display: block;
+}
+
+/* Weekly avg note */
+.wt-agg-note {
+    text-align: center;
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    margin: var(--space-1) 0 0;
+}
+
+.ghm-cell-active {
     cursor: pointer;
 }
 
-.heatmap-cell.hot {
-    background: rgba(200, 149, 108, 0.35);
+.ghm-cell-active:hover {
+    stroke: var(--accent);
+    stroke-width: 1.5;
 }
 
-.heatmap-cell.selected {
-    background: var(--accent);
-    color: var(--bg-primary);
+/* Legend */
+.ghm-legend {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    justify-content: flex-end;
 }
 
-.heatmap-cell.active:hover {
-    background: rgba(200, 149, 108, 0.4);
+.ghm-legend-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    margin: 0 2px;
+}
+
+.ghm-legend-cell {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    display: inline-block;
+}
+
+.ghm-legend-goal {
+    font-size: 9px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    margin-left: var(--space-2);
 }
 
 /* Day detail */
-.heatmap-day-detail {
+.ghm-day-detail {
     overflow: hidden;
     border-radius: var(--radius-md);
     background: var(--bg-secondary);
     border: 1px solid var(--border);
 }
 
-.heatmap-day-detail-inner {
+.ghm-day-detail-inner {
     padding: var(--space-3);
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
 }
 
-.heatmap-day-title {
+.ghm-day-title {
     font-size: var(--text-xs);
     color: var(--text-secondary);
     font-weight: var(--font-weight-semibold);
     margin: 0;
 }
 
-.heatmap-sessions-list {
+.ghm-sessions-list {
     max-height: 160px;
     overflow-y: auto;
     display: flex;
@@ -360,7 +590,7 @@
     gap: var(--space-1);
 }
 
-.heatmap-session-pill {
+.ghm-session-pill {
     display: flex;
     align-items: center;
     gap: var(--space-2);
@@ -371,16 +601,16 @@
     border-radius: var(--radius-sm);
 }
 
-.heatmap-session-pill .pill-dot {
+.ghm-session-pill .pill-dot {
     color: var(--text-muted);
 }
 
-.heatmap-session-pill .pill-time {
+.ghm-session-pill .pill-time {
     color: var(--text-secondary);
     margin-left: auto;
 }
 
-.heatmap-loading {
+.ghm-loading {
     text-align: center;
     color: var(--text-muted);
     padding: var(--space-8) 0;

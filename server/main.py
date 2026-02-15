@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import meditation
+from .routers import meditation, chat
 
 app = FastAPI(title="Ultraviolet Perigee API", version="0.1.0")
 
@@ -13,6 +13,7 @@ app.add_middleware(
 )
 
 app.include_router(meditation.router)
+app.include_router(chat.router)
 
 
 @app.get("/api/health")

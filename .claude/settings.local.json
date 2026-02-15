@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(git log:*)",
+      "Bash(curl:*)",
+      "Bash(pip show:*)",
+      "Bash(uvicorn server.main:app:*)",
+      "Bash(npm run dev:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:perimeter.karm.fyi)",
+      "WebFetch(domain:www.npmjs.com)"
+    ]
+  }
+}

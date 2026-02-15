@@ -191,6 +191,39 @@ export function CompletionScreen() {
                     completed_seconds: elapsed,
                     sound_type: selectedSound,
                 });
+
+                // Auto-mark meditation habit for today (prefer automation_type match)
+                const today = new Date().toISOString().split('T')[0];
+                let habitMatch = await supabase.from('habits')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .eq('automation_type', 'meditation')
+                    .eq('archived', false)
+                    .limit(1);
+
+                // Fallback: match by name (backward compat)
+                if (!habitMatch.data?.length) {
+                    habitMatch = await supabase.from('habits')
+                        .select('id')
+                        .eq('user_id', user.id)
+                        .ilike('name', 'meditation')
+                        .eq('archived', false)
+                        .limit(1);
+                }
+
+                if (habitMatch.data && habitMatch.data.length > 0) {
+                    const habitId = habitMatch.data[0].id;
+                    const { data: existing } = await supabase.from('habit_logs')
+                        .select('id')
+                        .eq('habit_id', habitId)
+                        .eq('logged_at', today)
+                        .limit(1);
+                    if (!existing || existing.length === 0) {
+                        await supabase.from('habit_logs')
+                            .insert({ habit_id: habitId, user_id: user.id, logged_at: today });
+                    }
+                }
+
                 setSaved(true);
                 const s = await fetchStats(user.id);
                 setStats(s);

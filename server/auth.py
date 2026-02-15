@@ -22,14 +22,16 @@ async def get_current_user(
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    result = supabase.table("profiles").select("*").eq("id", user_id).single().execute()
-    if not result.data:
-        raise HTTPException(status_code=404, detail="Profile not found")
+    try:
+        result = supabase.table("profiles").select("*").eq("id", user_id).limit(1).execute()
+        profile = result.data[0] if result and result.data else None
+    except Exception:
+        profile = None
 
     return CurrentUser(
         id=user_id,
-        role=result.data.get("role", "user"),
-        subscription_tier=result.data.get("subscription_tier", "free"),
+        role=profile.get("role", "user") if profile else "user",
+        subscription_tier=profile.get("subscription_tier", "free") if profile else "free",
     )
 
 

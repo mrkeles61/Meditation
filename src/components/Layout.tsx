@@ -6,13 +6,17 @@ import './Layout.css';
 const NAV_ITEMS = [
     { to: '/', icon: '◉', label: 'Dashboard' },
     { to: '/meditation', icon: '◎', label: 'Meditation' },
+    { to: '/habits', icon: '✓', label: 'Habits' },
+    { to: '/chat', icon: '◈', label: 'Coach' },
     { to: '/profile', icon: '◐', label: 'Profile' },
-    { to: '/styles', icon: '◈', label: 'Styles' },
+    { to: '/styles', icon: '◇', label: 'Styles' },
 ];
 
 const BOTTOM_TABS = [
     { to: '/', icon: '◉', label: 'Home' },
     { to: '/meditation', icon: '◎', label: 'Meditate' },
+    { to: '/habits', icon: '✓', label: 'Habits' },
+    { to: '/chat', icon: '◈', label: 'Coach' },
     { to: '/profile', icon: '◐', label: 'Profile' },
 ];
 
@@ -22,6 +26,8 @@ export function Layout() {
 
     // Hide bottom nav during fullscreen meditation phases
     const isMeditationActive = location.pathname === '/meditation';
+    // Hide mobile header on town/home route for full-bleed view
+    const isTownRoute = location.pathname === '/';
 
     async function handleSignOut() {
         await supabase.auth.signOut();
@@ -68,9 +74,11 @@ export function Layout() {
             <div className="sidebar-overlay" onClick={toggleSidebar} />
 
             <main className="main-content">
-                <header className="mobile-header">
-                    <span className="mobile-logo">Ultraviolet Perigee</span>
-                </header>
+                {!isTownRoute && (
+                    <header className="mobile-header">
+                        <span className="mobile-logo">Ultraviolet Perigee</span>
+                    </header>
+                )}
                 <div className="content-area">
                     <Outlet />
                 </div>
