@@ -1,5 +1,5 @@
-import { PixiWorld } from './PixiWorld';
+import { TownScene } from './TownScene';
 
 export function TownView() {
-    return <PixiWorld />;
+    return <TownScene />;
 }
