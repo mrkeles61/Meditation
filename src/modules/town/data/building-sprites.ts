@@ -10,7 +10,7 @@ export const BUILDING_SPRITES: Record<string, Record<number, string>> = {
         3: '/assets/buildings/meditation.png',
     },
     gym: {
-        1: '/assets/buildings/gym.jpg',
+        1: '/assets/buildings/gym.png',
         2: '/buildings/gym-level-2.png',
         3: '/buildings/gym-level-2.png',
     },

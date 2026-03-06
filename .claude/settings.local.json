@@ -17,7 +17,15 @@
       "Bash(git -C \"C:\\\\Users\\\\erenk\\\\OneDrive\\\\Desktop\\\\Projeler\\\\Habit Tracker\\\\.claude\\\\worktrees\\\\focused-sutherland\" log --oneline -5)",
       "Bash(git -C \"C:\\\\Users\\\\erenk\\\\OneDrive\\\\Desktop\\\\Projeler\\\\Habit Tracker\\\\.claude\\\\worktrees\\\\focused-sutherland\" log --oneline origin/claude/focused-sutherland..HEAD)",
       "Bash(git -C \"C:\\\\Users\\\\erenk\\\\OneDrive\\\\Desktop\\\\Projeler\\\\Habit Tracker\\\\.claude\\\\worktrees\\\\focused-sutherland\" remote -v)",
-      "Bash(git -C \"C:\\\\Users\\\\erenk\\\\OneDrive\\\\Desktop\\\\Projeler\\\\Habit Tracker\\\\.claude\\\\worktrees\\\\focused-sutherland\" log --oneline origin/main..HEAD)"
+      "Bash(git -C \"C:\\\\Users\\\\erenk\\\\OneDrive\\\\Desktop\\\\Projeler\\\\Habit Tracker\\\\.claude\\\\worktrees\\\\focused-sutherland\" log --oneline origin/main..HEAD)",
+      "Bash(npx tsc --noEmit)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(lsof -ti:5173)",
+      "Bash(xargs kill -9)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //PID 14384 //F)",
+      "Bash(rembg --version)",
+      "Bash(pip3 show rembg)"
     ]
   }
 }
