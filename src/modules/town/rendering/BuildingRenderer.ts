@@ -1,5 +1,33 @@
-import { Container, Graphics } from 'pixi.js';
+import { Assets, Container, Graphics, Sprite, Texture } from 'pixi.js';
 import type { BuildingDefinition, BuildingLevel } from '../types/town.types';
+import { BUILDING_SPRITES } from '../data/building-sprites';
+
+// Module-level texture cache — populated by preloadBuildingSprites()
+const textureCache = new Map<string, Texture>();
+
+/**
+ * Preloads all known building sprite paths into the texture cache.
+ * Call once during scene init before renderBuilding().
+ */
+export async function preloadBuildingSprites(): Promise<void> {
+    const paths = new Set<string>();
+    for (const levels of Object.values(BUILDING_SPRITES)) {
+        for (const path of Object.values(levels)) {
+            paths.add(path);
+        }
+    }
+
+    await Promise.allSettled(
+        [...paths].map(async (path) => {
+            try {
+                const texture = await Assets.load(path);
+                textureCache.set(path, texture);
+            } catch {
+                // Sprite not available — will fall back to Graphics
+            }
+        }),
+    );
+}
 
 export function renderBuilding(def: BuildingDefinition, level: number): Container {
     const container = new Container();
@@ -10,13 +38,39 @@ export function renderBuilding(def: BuildingDefinition, level: number): Containe
     if (level === 0) {
         drawLockedBuilding(container, W, H);
     } else {
-        drawIsometricBuilding(container, W, H, bl, def.habitType);
+        const spritePath = BUILDING_SPRITES[def.habitType]?.[level];
+        const texture = spritePath ? textureCache.get(spritePath) : undefined;
+
+        if (texture) {
+            drawSpriteBuilding(container, W, H, texture);
+        } else {
+            drawIsometricBuilding(container, W, H, bl, def.habitType);
+        }
     }
 
     // Anchor at bottom-center
     container.pivot.set(W / 2, H);
 
     return container;
+}
+
+function drawSpriteBuilding(container: Container, W: number, H: number, texture: Texture): void {
+    // Shadow beneath sprite
+    const shadow = new Graphics();
+    shadow.ellipse(W / 2, H + 4, W * 0.45, W * 0.18).fill({ color: '#000000', alpha: 0.25 });
+    container.addChild(shadow);
+
+    const sprite = new Sprite(texture);
+    sprite.anchor.set(0.5, 1.0);
+    sprite.position.set(W / 2, H);
+
+    // Scale sprite to fit within the container bounding box
+    const maxW = W * 0.95;
+    const maxH = H * 0.95;
+    const scale = Math.min(maxW / texture.width, maxH / texture.height);
+    sprite.scale.set(scale);
+
+    container.addChild(sprite);
 }
 
 function drawLockedBuilding(container: Container, W: number, H: number) {

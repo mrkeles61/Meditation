@@ -29,12 +29,15 @@ export class NPCSystem {
         for (let i = 0; i < NPC_ROUTES.length; i++) {
             const route = NPC_ROUTES[i];
             const renderer = new NPCRenderer(route.color);
-            renderer.container.scale.set(0.8);
+            renderer.container.scale.set(1.0); // full scale — previously 0.8
 
             const start = route.points[0];
             const sx = start.x * this.sceneW;
             const sy = start.y * this.sceneH;
             renderer.setPosition(sx, sy);
+
+            // Enable z-index on NPC container for Y-sort with buildings
+            renderer.container.zIndex = sy;
 
             this.sceneContainer.addChild(renderer.container);
 
@@ -51,6 +54,9 @@ export class NPCSystem {
 
             this.setNextTarget(this.npcs[i]);
         }
+
+        // Enable z-index sorting on the container so NPCs Y-sort with siblings
+        this.sceneContainer.sortableChildren = true;
     }
 
     private setNextTarget(npc: NPCState): void {
@@ -87,7 +93,8 @@ export class NPCSystem {
                 npc.renderer.setPosition(npc.targetX, npc.targetY);
                 npc.moving = false;
                 npc.paused = true;
-                npc.pauseTimer = 60 + Math.random() * 120; // 1-3 seconds at 60fps
+                // Pause 2–3 seconds at each waypoint (120–180 frames at 60fps)
+                npc.pauseTimer = 120 + Math.random() * 60;
             } else {
                 const nx = dx / dist;
                 const ny = dy / dist;
@@ -96,6 +103,9 @@ export class NPCSystem {
                     npc.renderer.container.y + ny * speed,
                 );
             }
+
+            // Update z-index for Y-sort depth
+            npc.renderer.container.zIndex = npc.renderer.container.y;
 
             npc.renderer.update(npc.moving);
         }

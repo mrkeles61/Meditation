@@ -219,6 +219,21 @@
     }
 }
 
+/* Town/home route: content-area is behind the fixed canvas — reset all spacing */
+.town-route .content-area {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+    background: transparent;
+    overflow: hidden;
+}
+
+/* Town route: enhance bottom-nav visibility over the canvas */
+.town-route .bottom-nav {
+    background: rgba(10, 10, 15, 0.75);
+    border-top-color: rgba(255, 179, 71, 0.15);
+}
+
 /* ─── Bottom Tab Bar (mobile only) ─── */
 .bottom-nav {
     display: flex;

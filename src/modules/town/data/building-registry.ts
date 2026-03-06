@@ -1,12 +1,25 @@
 import type { BuildingDefinition } from '../types/town.types';
 
+/**
+ * Village layout (isometric diamond, Y increases toward viewer):
+ *
+ *           [Clock Tower]        ← back-center, tallest
+ *      [Library]     [Rest House] ← outer back ring
+ *         [Zen Temple]            ← center (largest)
+ *    [Gym]         [Garden Kitchen]  ← inner ring
+ *         [Well]                  ← front-center (small)
+ *                     [Bookshop]  ← front-right
+ *
+ * All x/y are normalized 0–1 within the screen.
+ * Scale decreases for buildings higher up (further back).
+ */
 export const BUILDING_REGISTRY: Record<string, BuildingDefinition> = {
     meditation: {
         id: 'meditation',
         habitType: 'meditation',
         name: 'Zen Temple',
         description: 'A peaceful temple for daily meditation',
-        position: { x: 0.50, y: 0.45, scale: 1.1 },
+        position: { x: 0.50, y: 0.40, scale: 1.1 }, // center diamond — largest
         baseWidth: 140,
         baseHeight: 180,
         levels: [
@@ -21,7 +34,7 @@ export const BUILDING_REGISTRY: Record<string, BuildingDefinition> = {
         habitType: 'gym',
         name: 'Fitness Center',
         description: 'Train your body and build strength',
-        position: { x: 0.25, y: 0.65, scale: 1.0 },
+        position: { x: 0.28, y: 0.56, scale: 1.0 }, // inner ring, front-left
         baseWidth: 130,
         baseHeight: 160,
         levels: [
@@ -36,7 +49,7 @@ export const BUILDING_REGISTRY: Record<string, BuildingDefinition> = {
         habitType: 'reading',
         name: 'Library',
         description: 'Read daily to grow your mind',
-        position: { x: 0.20, y: 0.30, scale: 0.85 },
+        position: { x: 0.22, y: 0.30, scale: 0.80 }, // outer back-left
         baseWidth: 120,
         baseHeight: 150,
         levels: [
@@ -51,7 +64,7 @@ export const BUILDING_REGISTRY: Record<string, BuildingDefinition> = {
         habitType: 'nutrition',
         name: 'Garden Kitchen',
         description: 'Eat well and track your meals',
-        position: { x: 0.75, y: 0.50, scale: 0.95 },
+        position: { x: 0.70, y: 0.53, scale: 0.95 }, // inner ring, front-right
         baseWidth: 130,
         baseHeight: 155,
         levels: [
@@ -66,7 +79,7 @@ export const BUILDING_REGISTRY: Record<string, BuildingDefinition> = {
         habitType: 'sleep',
         name: 'Rest House',
         description: 'Track sleep for better recovery',
-        position: { x: 0.80, y: 0.35, scale: 0.85 },
+        position: { x: 0.78, y: 0.30, scale: 0.80 }, // outer back-right
         baseWidth: 120,
         baseHeight: 150,
         levels: [
@@ -81,7 +94,7 @@ export const BUILDING_REGISTRY: Record<string, BuildingDefinition> = {
         habitType: 'hydration',
         name: 'The Well',
         description: 'Stay hydrated throughout the day',
-        position: { x: 0.50, y: 0.70, scale: 1.0 },
+        position: { x: 0.50, y: 0.65, scale: 0.85 }, // front center, small well
         baseWidth: 80,
         baseHeight: 90,
         levels: [
@@ -96,7 +109,7 @@ export const BUILDING_REGISTRY: Record<string, BuildingDefinition> = {
         habitType: 'productivity',
         name: 'Clock Tower',
         description: 'Focus and manage your time wisely',
-        position: { x: 0.50, y: 0.25, scale: 0.80 },
+        position: { x: 0.50, y: 0.21, scale: 0.75 }, // outer back-center, tallest structure
         baseWidth: 90,
         baseHeight: 220,
         levels: [
@@ -111,7 +124,7 @@ export const BUILDING_REGISTRY: Record<string, BuildingDefinition> = {
         habitType: 'journal',
         name: 'Bookshop',
         description: 'Write daily reflections and gratitude',
-        position: { x: 0.72, y: 0.62, scale: 1.0 },
+        position: { x: 0.76, y: 0.63, scale: 0.90 }, // front far-right
         baseWidth: 120,
         baseHeight: 150,
         levels: [

@@ -49,12 +49,12 @@ export function TownScene() {
 
             // ── Scene ──
             scene = new SceneRenderer(app);
-            scene.init(app.screen.width, app.screen.height, useTownStore.getState().buildings);
+            await scene.init(app.screen.width, app.screen.height, useTownStore.getState().buildings);
             app.stage.addChild(scene.root);
 
-            // ── Camera (zoom only) ──
+            // ── Camera (zoom + drag-to-pan) ──
             camera = new CameraSystem(scene.root);
-            camera.bindEvents(app.canvas);
+            camera.bindEvents(app.canvas, app.screen.width, app.screen.height);
 
             // ── Building interaction ──
             const buildingSystem = new BuildingSystem(scene);
@@ -99,6 +99,7 @@ export function TownScene() {
                     scene.resize(app.screen.width, app.screen.height, useTownStore.getState().buildings);
                     npcSystem.resize(app.screen.width, app.screen.height);
                     ambient.resize(app.screen.width, app.screen.height);
+                    camera.resize(app.screen.width, app.screen.height);
                 }
             };
             window.addEventListener('resize', onResize);

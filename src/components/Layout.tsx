@@ -34,7 +34,7 @@ export function Layout() {
     }
 
     return (
-        <div className={`layout ${sidebarOpen ? 'sidebar-open' : ''}`}>
+        <div className={`layout ${sidebarOpen ? 'sidebar-open' : ''} ${isTownRoute ? 'town-route' : ''}`}>
             <aside className="sidebar">
                 <div className="sidebar-header">
                     <span className="sidebar-logo">UP</span>

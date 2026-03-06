@@ -1,6 +1,6 @@
 import { Application, Container, Sprite } from 'pixi.js';
 import { GroundRenderer } from './GroundRenderer';
-import { renderBuilding } from './BuildingRenderer';
+import { renderBuilding, preloadBuildingSprites } from './BuildingRenderer';
 import { BUILDING_REGISTRY } from '../data/building-registry';
 import { resolvePosition, getSceneScale } from '../data/scene-layout';
 import type { BuildingState } from '../types/town.types';
@@ -37,9 +37,12 @@ export class SceneRenderer {
         this.root.addChild(this.shadowLayer, this.buildingLayer, this.effectLayer);
     }
 
-    init(screenW: number, screenH: number, buildingStates: Record<string, BuildingState>): void {
+    async init(screenW: number, screenH: number, buildingStates: Record<string, BuildingState>): Promise<void> {
         this.sceneW = screenW;
         this.sceneH = screenH;
+
+        // Preload all known building sprites before rendering
+        await preloadBuildingSprites();
 
         // Scene scale for responsive sizing
         const scale = getSceneScale(screenW, screenH);
