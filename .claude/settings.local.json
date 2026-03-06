@@ -12,7 +12,12 @@
       "Bash(npm run dev:*)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:perimeter.karm.fyi)",
-      "WebFetch(domain:www.npmjs.com)"
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(git -C \"C:\\\\Users\\\\erenk\\\\OneDrive\\\\Desktop\\\\Projeler\\\\Habit Tracker\\\\.claude\\\\worktrees\\\\focused-sutherland\" status)",
+      "Bash(git -C \"C:\\\\Users\\\\erenk\\\\OneDrive\\\\Desktop\\\\Projeler\\\\Habit Tracker\\\\.claude\\\\worktrees\\\\focused-sutherland\" log --oneline -5)",
+      "Bash(git -C \"C:\\\\Users\\\\erenk\\\\OneDrive\\\\Desktop\\\\Projeler\\\\Habit Tracker\\\\.claude\\\\worktrees\\\\focused-sutherland\" log --oneline origin/claude/focused-sutherland..HEAD)",
+      "Bash(git -C \"C:\\\\Users\\\\erenk\\\\OneDrive\\\\Desktop\\\\Projeler\\\\Habit Tracker\\\\.claude\\\\worktrees\\\\focused-sutherland\" remote -v)",
+      "Bash(git -C \"C:\\\\Users\\\\erenk\\\\OneDrive\\\\Desktop\\\\Projeler\\\\Habit Tracker\\\\.claude\\\\worktrees\\\\focused-sutherland\" log --oneline origin/main..HEAD)"
     ]
   }
 }
