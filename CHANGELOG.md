@@ -7,8 +7,11 @@ All notable changes to this project, organized by date.
 ## 2026-03-07
 
 ### Added
+- **Gamified Isometric Navigation:** The 3D town is now the central hub. Clicking the "Zen Shrine" opens the Meditation page, and clicking other buildings opens the Habits page.
+- **Voice Pill (Coach):** Added a floating, "Wispr Flow"-style voice dictation button (`VoicePill.tsx`) globally to the Layout. Users can press to talk from any screen without navigating.
+- **Voice Review Stage:** The Voice Pill now shows a review panel with editable text before sending to AI, mimicking the Wispr Flow UI.
 - **Voice Input Modal:** Integrated Web Speech API (`webkitSpeechRecognition`) for pushing-to-talk to transcribe user voice on the Habits page. Includes a live pulsing animation and fallback text input.
-- **Gemini AI Parsing Service:** New service (`src/services/gemini.ts`) that securely connects to Gemini 2.0 Flash to process speech transcripts, accurately match against existing habits (with confidence scoring), and suggest new trackable habits.
+- **Gemini AI Parsing Service:** New service (`src/services/gemini.ts`) that securely connects to Gemini 2.5 Flash to process speech transcripts using Structured Outputs (`application/json`) to accurately match against existing habits (with confidence scoring) and suggest new trackable habits.
 - **AI Confirmation Panel:** New UI panel that allows the user to review AI-detected habits and confirm their completion, as well as one-click add newly suggested habits.
 - **Weekly Heatmap Visualization:** 7-day visual strip on the "Today" habits view to quickly scan the week's completion percentage (represented with opacity).
 - **Category Breakdown Chart:** Horizontal bar chart to visualize habit completion rates isolated by custom categories (Meditation, Exercise, Reading, Nutrition, Sleep, etc.).

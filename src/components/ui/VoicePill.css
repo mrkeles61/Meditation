@@ -1,0 +1,271 @@
+.voice-pill-container {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    pointer-events: none;
+    /* Let clicks pass through empty space */
+}
+
+/* Re-enable pointer events for actual interactive children */
+.voice-pill,
+.voice-pill-results-panel,
+.voice-pill-error {
+    pointer-events: auto;
+}
+
+/* The actual floating pill */
+.voice-pill {
+    background: rgba(18, 18, 20, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    width: max-content;
+}
+
+.voice-pill.expanded {
+    padding-right: 20px;
+    border-color: rgba(200, 149, 108, 0.2);
+}
+
+.voice-pill-button {
+    background: transparent;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 20px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.voice-pill-button:hover:not(:disabled) {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.voice-pill-button.active {
+    color: #c8956c;
+    background: rgba(200, 149, 108, 0.1);
+}
+
+.voice-pill-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.voice-pill-pulse {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 999px;
+    border: 1px solid #c8956c;
+    animation: voice-pulse 1.5s ease-out infinite;
+    pointer-events: none;
+}
+
+.voice-pill-pulse.delay {
+    animation-delay: 0.75s;
+}
+
+@keyframes voice-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.4);
+        opacity: 0;
+    }
+}
+
+.voice-pill-status {
+    margin-left: 12px;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    animation: fade-in 0.3s ease;
+}
+
+.voice-pill-status.listening {
+    color: #c8956c;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #c8956c;
+    border-radius: 50%;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.status-spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(200, 149, 108, 0.2);
+    border-top-color: #c8956c;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.voice-pill-results-panel {
+    background: rgba(18, 18, 20, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    width: calc(100vw - 32px);
+    max-width: 400px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.voice-pill-error {
+    background: rgba(255, 82, 82, 0.1);
+    border: 1px solid rgba(255, 82, 82, 0.3);
+    color: #ff5252;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    animation: fade-in 0.3s ease;
+}
+
+@keyframes slide-up {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.voice-pill-review-panel {
+    background: rgba(18, 18, 20, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    width: calc(100vw - 32px);
+    max-width: 400px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+    padding: 16px;
+    animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.voice-pill-textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: none;
+    min-height: 80px;
+    margin-bottom: 12px;
+}
+
+.voice-pill-textarea:focus {
+    outline: none;
+    border-color: #c8956c;
+}
+
+.voice-pill-review-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.voice-pill-action-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.voice-pill-action-btn.cancel {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.voice-pill-action-btn.cancel:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+.voice-pill-action-btn.send {
+    background: #c8956c;
+    color: #121214;
+}
+
+.voice-pill-action-btn.send:hover:not(:disabled) {
+    background: #deb696;
+}
+
+.voice-pill-action-btn.send:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.voice-pill-status.reviewing {
+    color: #fff;
+}

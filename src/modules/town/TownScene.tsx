@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Application } from 'pixi.js';
+import { useNavigate } from 'react-router-dom';
 import { SceneRenderer } from './rendering/SceneRenderer';
 import { BuildingSystem } from './systems/BuildingSystem';
 import { NPCSystem } from './systems/NPCSystem';
@@ -7,7 +8,6 @@ import { DayNightSystem } from './systems/DayNightSystem';
 import { AmbientSystem } from './systems/AmbientSystem';
 import { CameraSystem } from './systems/CameraSystem';
 import { useTownStore } from './stores/townStore';
-import { BuildingPanel } from './components/BuildingPanel';
 import { TownHUD } from './components/TownHUD';
 import './Town.css';
 
@@ -17,6 +17,25 @@ export function TownScene() {
     const buildingSystemRef = useRef<BuildingSystem | null>(null);
     const [ready, setReady] = useState(false);
     const selectedBuilding = useTownStore((s) => s.selectedBuilding);
+    const navigate = useNavigate();
+
+    // Handle programmatic routing based on building click
+    useEffect(() => {
+        if (selectedBuilding) {
+            // Slight delay so the bounce animation has a chance to start
+            setTimeout(() => {
+                if (selectedBuilding === 'meditation') {
+                    navigate('/meditation');
+                } else {
+                    // All other buildings (gym, sleep, reading, custom, nutrition) go to Habits list
+                    navigate('/habits');
+                }
+
+                // Reset selection so it isn't "pre-selected" when hitting back
+                buildingSystemRef.current?.deselect();
+            }, 100);
+        }
+    }, [selectedBuilding, navigate]);
 
     useEffect(() => {
         if (!containerRef.current) return;
@@ -121,12 +140,7 @@ export function TownScene() {
     return (
         <div className="town-scene" ref={containerRef}>
             <TownHUD />
-            <BuildingPanel
-                habitType={selectedBuilding}
-                onClose={() => {
-                    buildingSystemRef.current?.deselect();
-                }}
-            />
         </div>
     );
 }
+

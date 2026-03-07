@@ -1,6 +1,7 @@
 import { NavLink, Link, Outlet, useLocation } from 'react-router-dom';
 import { useAppStore } from '../stores/appStore';
 import { supabase } from '../services/supabase';
+import { VoicePill } from './ui/VoicePill';
 import './Layout.css';
 
 const NAV_ITEMS = [
@@ -100,6 +101,8 @@ export function Layout() {
                     ))}
                 </nav>
             )}
+
+            <VoicePill />
         </div>
     );
 }
