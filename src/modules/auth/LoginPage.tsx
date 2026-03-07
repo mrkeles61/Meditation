@@ -59,8 +59,8 @@ function Wave() {
 }
 
 export function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('erenkeles2005@outlook.com');
+    const [password, setPassword] = useState('admin123456');
     const [isSignUp, setIsSignUp] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');

@@ -20,7 +20,11 @@ def get_habit_and_level(filename):
 def run_rembg(input_path, output_path):
     print(f"Removing background for {os.path.basename(input_path)}...")
     try:
-        subprocess.run(["rembg", "i", input_path, output_path], check=True)
+        # Using absolute path since it was installed in roaming AppData and isn't on PATH
+        rembg_exe = r"C:\Users\erenk\AppData\Roaming\Python\Python314\Scripts\rembg.exe"
+        if not os.path.exists(rembg_exe):
+             rembg_exe = "rembg" # fallback
+        subprocess.run([rembg_exe, "i", input_path, output_path], check=True)
         return True
     except subprocess.CalledProcessError:
         print(f"Error: Failed to process {input_path} with rembg.")

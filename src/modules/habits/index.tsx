@@ -5,6 +5,9 @@ import { HabitCard } from './components/HabitCard';
 import { AddHabitModal } from './components/AddHabitModal';
 import { MonthlyGrid } from './components/MonthlyGrid';
 import { CoreHabitOnboarding } from './components/CoreHabitOnboarding';
+import { VoiceInputModal } from './components/VoiceInputModal';
+import { WeeklyHeatmap } from './components/WeeklyHeatmap';
+import { CategoryBreakdown } from './components/CategoryBreakdown';
 import { type CoreHabit } from './core-habits';
 import {
     DndContext, closestCenter, PointerSensor, TouchSensor,
@@ -77,6 +80,7 @@ export function HabitsPage() {
     const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
     const [viewMode, setViewMode] = useState<'today' | 'month'>('today');
     const [showOnboarding, setShowOnboarding] = useState(false);
+    const [voiceOpen, setVoiceOpen] = useState(false);
 
     const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
 
@@ -249,9 +253,12 @@ export function HabitsPage() {
         <div className="habits-page">
             <div className="habits-header">
                 <h2 className="habits-title">Habits</h2>
-                <button className="habits-add-btn" onClick={() => { setEditingHabit(null); setModalOpen(true); }}>
-                    + New
-                </button>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <button className="habits-voice-btn" onClick={() => setVoiceOpen(true)}>🎤</button>
+                    <button className="habits-add-btn" onClick={() => { setEditingHabit(null); setModalOpen(true); }}>
+                        + New
+                    </button>
+                </div>
             </div>
 
             <div className="habits-view-toggle">
@@ -280,6 +287,14 @@ export function HabitsPage() {
                         <span className="habits-stat-label">completion</span>
                     </div>
                 </div>
+            )}
+
+            {habits.length > 0 && viewMode === 'today' && (
+                <WeeklyHeatmap habits={habits} habitLogMap={habitLogMap} />
+            )}
+
+            {habits.length > 0 && viewMode === 'today' && (
+                <CategoryBreakdown habits={habits} habitLogMap={habitLogMap} todayStr={todayStr} />
             )}
 
             {viewMode === 'today' ? (
@@ -340,6 +355,27 @@ export function HabitsPage() {
                 onSave={saveHabit}
                 onArchive={editingHabit ? archiveHabit : undefined}
                 onClose={() => { setModalOpen(false); setEditingHabit(null); }}
+            />
+
+            <VoiceInputModal
+                open={voiceOpen}
+                habits={habits.map(h => ({ id: h.id, name: h.name, category: h.category }))}
+                onConfirm={(habitIds) => {
+                    habitIds.forEach(id => {
+                        if (!habitLogMap[id]?.[todayStr]) toggleHabit(id);
+                    });
+                }}
+                onAddSuggestion={(name) => {
+                    setVoiceOpen(false);
+                    setEditingHabit(null);
+                    setModalOpen(true);
+                    // Pre-fill suggestion name via a small timeout to let modal render
+                    setTimeout(() => {
+                        const input = document.querySelector('.habit-modal-input') as HTMLInputElement;
+                        if (input) { input.value = name; input.dispatchEvent(new Event('input', { bubbles: true })); }
+                    }, 100);
+                }}
+                onClose={() => setVoiceOpen(false)}
             />
         </div>
     );

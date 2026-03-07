@@ -4,6 +4,33 @@ All notable changes to this project, organized by date.
 
 ---
 
+## 2026-03-07
+
+### Added
+- **Voice Input Modal:** Integrated Web Speech API (`webkitSpeechRecognition`) for pushing-to-talk to transcribe user voice on the Habits page. Includes a live pulsing animation and fallback text input.
+- **Gemini AI Parsing Service:** New service (`src/services/gemini.ts`) that securely connects to Gemini 2.0 Flash to process speech transcripts, accurately match against existing habits (with confidence scoring), and suggest new trackable habits.
+- **AI Confirmation Panel:** New UI panel that allows the user to review AI-detected habits and confirm their completion, as well as one-click add newly suggested habits.
+- **Weekly Heatmap Visualization:** 7-day visual strip on the "Today" habits view to quickly scan the week's completion percentage (represented with opacity).
+- **Category Breakdown Chart:** Horizontal bar chart to visualize habit completion rates isolated by custom categories (Meditation, Exercise, Reading, Nutrition, Sleep, etc.).
+- **Admin Password Reset:** Updated the auth system to allow quick auto-fill of admin sandbox credentials for easier developer testing.
+
+### Changed
+- **Habits Page:** Wire-framed the UI components to seamlessly combine the STT flow into the main Habit tracking dashboard using the existing design system. Added ~475 lines of new modular CSS logic.
+
+### Testing the New Features
+1. **Login:** The credentials `erenkeles2005@outlook.com` / `admin123456` are auto-filled on `/login`.
+2. **Setup Habits:** Go to the Habits page (`/#/habits`). Make sure you have created at least a couple of habits like "Meditation", "Read a Book", or "Workout".
+3. **Voice Tracking:**
+   - Click the `🎤` button at the top header next to "+ New".
+   - Grant microphone access.
+   - Hold the mic button and say something like: *"I finished my meditation and completed a quick workout today."*
+   - Let go, wait for the AI to process, and the Confirmation panel will correctly detect those two habits. Click **Mark 2 Complete**.
+4. **Visualizations:**
+   - The **Weekly Heatmap** will instantly show your progress for the current day increasing its shading.
+   - The **Category Breakdown** will update the progress bar related to the category (e.g., Exercise) percentage.
+
+---
+
 ## 2026-02-09
 
 ### Meditation UX — Completion Screen Redesign
