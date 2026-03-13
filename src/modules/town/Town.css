@@ -223,3 +223,31 @@
 .building-panel-btn:hover {
     background: var(--accent-hover);
 }
+
+/* ── Level-up celebration overlay ────────── */
+
+.level-up-flash {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 50% 45%, rgba(255, 215, 0, 0.55), transparent 65%);
+    pointer-events: none;
+    z-index: 80;
+}
+
+.level-up-text {
+    position: fixed;
+    top: 38%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-primary);
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-bold);
+    color: #FFD700;
+    text-shadow:
+        0 0 12px rgba(255, 185, 0, 0.9),
+        0 2px 8px rgba(0, 0, 0, 0.7);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 81;
+    letter-spacing: 0.02em;
+}

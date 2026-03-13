@@ -1,146 +1,122 @@
-import { useEffect, useRef, useState } from 'react';
-import { Application } from 'pixi.js';
-import { useNavigate } from 'react-router-dom';
-import { SceneRenderer } from './rendering/SceneRenderer';
-import { BuildingSystem } from './systems/BuildingSystem';
-import { NPCSystem } from './systems/NPCSystem';
-import { DayNightSystem } from './systems/DayNightSystem';
-import { AmbientSystem } from './systems/AmbientSystem';
-import { CameraSystem } from './systems/CameraSystem';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTownStore } from './stores/townStore';
+import { SceneManager } from './three/SceneManager';
 import { TownHUD } from './components/TownHUD';
+import { BuildingPanel } from './components/BuildingPanel';
+import { useTownSync } from '../../hooks/useTownSync';
 import './Town.css';
 
 export function TownScene() {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const appRef = useRef<Application | null>(null);
-    const buildingSystemRef = useRef<BuildingSystem | null>(null);
-    const [ready, setReady] = useState(false);
-    const selectedBuilding = useTownStore((s) => s.selectedBuilding);
-    const navigate = useNavigate();
+    const containerRef  = useRef<HTMLDivElement>(null);
+    const canvasRef     = useRef<HTMLCanvasElement>(null);
+    const managerRef    = useRef<SceneManager | null>(null);
 
-    // Handle programmatic routing based on building click
+    const [panelHabitType, setPanelHabitType] = useState<string | null>(null);
+    const [levelUpMsg,     setLevelUpMsg]     = useState<string | null>(null);
+
+    const buildings        = useTownStore((s) => s.buildings);
+    const clearLevelUpFlag = useTownStore((s) => s.clearLevelUpFlag);
+
+    // Sync Supabase habit_logs → streak calc → townStore
+    useTownSync();
+
+    // ── Init Three.js scene ─────────────────────────────────────────────────
     useEffect(() => {
-        if (selectedBuilding) {
-            // Slight delay so the bounce animation has a chance to start
-            setTimeout(() => {
-                if (selectedBuilding === 'meditation') {
-                    navigate('/meditation');
-                } else {
-                    // All other buildings (gym, sleep, reading, custom, nutrition) go to Habits list
-                    navigate('/habits');
-                }
-
-                // Reset selection so it isn't "pre-selected" when hitting back
-                buildingSystemRef.current?.deselect();
-            }, 100);
-        }
-    }, [selectedBuilding, navigate]);
-
-    useEffect(() => {
-        if (!containerRef.current) return;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
 
         let destroyed = false;
-        let initDone = false;
-        const app = new Application();
-        appRef.current = app;
+        const manager = new SceneManager();
+        managerRef.current = manager;
 
-        let scene: SceneRenderer;
-        let npcSystem: NPCSystem;
-        let dayNight: DayNightSystem;
-        let ambient: AmbientSystem;
-        let camera: CameraSystem;
+        // Wire building tap → show panel (NOT navigate immediately)
+        manager.onBuildingTapped = (habitType) => {
+            setPanelHabitType(habitType);
+        };
 
-        async function init() {
-            await app.init({
-                resizeTo: window,
-                background: '#0a0a0a',
-                antialias: false,
-                resolution: window.devicePixelRatio,
-                autoDensity: true,
-            });
+        manager
+            .init(canvas)
+            .then(() => {
+                if (destroyed) { manager.destroy(); return; }
+                // Seed initial building states before first frame
+                manager.updateBuildings(useTownStore.getState().buildings);
+                manager.start();
+            })
+            .catch((err) => console.error('[TownScene] init failed:', err));
 
-            if (destroyed) return;
-            initDone = true;
-
-            containerRef.current!.appendChild(app.canvas);
-            app.canvas.style.touchAction = 'none';
-
-            // ── Scene ──
-            scene = new SceneRenderer(app);
-            await scene.init(app.screen.width, app.screen.height, useTownStore.getState().buildings);
-            app.stage.addChild(scene.root);
-
-            // ── Camera (zoom + drag-to-pan) ──
-            camera = new CameraSystem(scene.root);
-            camera.bindEvents(app.canvas, app.screen.width, app.screen.height);
-
-            // ── Building interaction ──
-            const buildingSystem = new BuildingSystem(scene);
-            buildingSystem.bindEvents();
-            buildingSystemRef.current = buildingSystem;
-
-            // ── Tap empty space to deselect ──
-            app.stage.eventMode = 'static';
-            app.stage.hitArea = app.screen;
-            app.stage.on('pointertap', () => {
-                if (useTownStore.getState().selectedBuilding) {
-                    buildingSystem.deselect();
-                }
-            });
-
-            // ── NPCs ──
-            npcSystem = new NPCSystem(scene.effectContainer, app.screen.width, app.screen.height);
-            npcSystem.init();
-
-            // ── Day/Night ──
-            dayNight = new DayNightSystem(scene.root);
-            dayNight.update();
-
-            // ── Ambient ──
-            ambient = new AmbientSystem(scene.effectContainer, app.screen.width, app.screen.height);
-            ambient.init();
-
-            // ── Game Loop ──
-            app.ticker.add((ticker) => {
-                camera.update();
-                npcSystem.update(ticker);
-                ambient.update(ticker);
-                // Day/night updates every ~60 frames (1 sec)
-                if (ticker.lastTime % 60 < ticker.deltaTime) {
-                    dayNight.update();
-                }
-            });
-
-            // ── Resize ──
-            const onResize = () => {
-                if (!destroyed) {
-                    scene.resize(app.screen.width, app.screen.height, useTownStore.getState().buildings);
-                    npcSystem.resize(app.screen.width, app.screen.height);
-                    ambient.resize(app.screen.width, app.screen.height);
-                    camera.resize(app.screen.width, app.screen.height);
-                }
-            };
-            window.addEventListener('resize', onResize);
-
-            setReady(true);
-        }
-
-        init().catch((err) => console.error('[TownScene] init failed:', err));
+        // Track container size → notify SceneManager
+        const ro = new ResizeObserver((entries) => {
+            const r = entries[0]?.contentRect;
+            if (r && !destroyed) manager.resize(r.width, r.height);
+        });
+        if (containerRef.current) ro.observe(containerRef.current);
 
         return () => {
             destroyed = true;
-            if (initDone && appRef.current) {
-                appRef.current.destroy(true, { children: true, texture: true });
-                appRef.current = null;
-            }
+            ro.disconnect();
+            manager.destroy();
+            managerRef.current = null;
         };
     }, []);
 
+    // ── Push store changes into Three.js scene ──────────────────────────────
+    useEffect(() => {
+        const manager = managerRef.current;
+        if (!manager) return;
+
+        manager.updateBuildings(buildings);
+
+        // Check for pending level-ups → show React overlay + clear flag
+        for (const [id, state] of Object.entries(buildings)) {
+            if (state.pendingLevelUp) {
+                const label = id.charAt(0).toUpperCase() + id.slice(1);
+                setLevelUpMsg(`${label} Levelled Up!`);
+                // Auto-dismiss after 2 s
+                const t = setTimeout(() => setLevelUpMsg(null), 2000);
+                clearLevelUpFlag(id);
+                return () => clearTimeout(t);
+            }
+        }
+    }, [buildings, clearLevelUpFlag]);
+
+    const closePanel = useCallback(() => setPanelHabitType(null), []);
+
     return (
         <div className="town-scene" ref={containerRef}>
+            {/* Three.js renders here */}
+            <canvas ref={canvasRef} />
+
+            {/* React overlays ─────────────────── */}
             <TownHUD />
+
+            <BuildingPanel habitType={panelHabitType} onClose={closePanel} />
+
+            {/* Level-up celebration overlay */}
+            <AnimatePresence>
+                {levelUpMsg && (
+                    <>
+                        <motion.div
+                            key="lvlup-flash"
+                            className="level-up-flash"
+                            initial={{ opacity: 0.55 }}
+                            animate={{ opacity: 0 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.9, ease: 'easeOut' }}
+                        />
+                        <motion.div
+                            key="lvlup-text"
+                            className="level-up-text"
+                            initial={{ opacity: 0, y: 24, scale: 0.75 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -28, scale: 1.1 }}
+                            transition={{ type: 'spring', damping: 14, stiffness: 280 }}
+                        >
+                            ⭐ {levelUpMsg} ⭐
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
-
